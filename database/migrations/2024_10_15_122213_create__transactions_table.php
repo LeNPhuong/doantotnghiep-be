@@ -16,11 +16,11 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('order_id')->nullable()->constrained('orders')->onDelete('set null');
             $table->float('total_price');
-            $table->string('note',191)->nullable();
+            $table->string('note', 191)->nullable();
             $table->string('name')->nullable();
             $table->string('phone', 191)->nullable();
             $table->string('email')->nullable();
-            $table->tinyInteger('payment_method');
+            $table->enum('payment_method', ['credit_card', 'paypal', 'cod']);
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
         });

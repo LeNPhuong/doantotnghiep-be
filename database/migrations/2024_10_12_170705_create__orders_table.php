@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('status_id')->nullable()->constrained('status')->onDelete('set null');
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->onDelete('set null');
-            $table->float('total_amount');
+            $table->float('total_price');
             $table->timestamps();
         });
     }

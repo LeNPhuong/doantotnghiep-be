@@ -14,7 +14,15 @@ class UserController extends BaseController
      */
     public function index()
     {
-        //
+        try {
+            // Tìm người dùng theo ID
+            $user = User::with('vouchers')->select('id', 'name', 'email', 'phone', 'email', 'avatar')->findOrFail(auth()->user()->id);
+
+            // Trả về thông tin người dùng dưới dạng JSON
+            return $this->sendResponse($user, 'Thông tin người dùng đã được lấy thành công');
+        } catch (\Throwable $th) {
+            return $this->sendError('Không tìm thấy người dùng.', ['error' => $th->getMessage()], 404);
+        }
     }
 
     /**
@@ -38,15 +46,7 @@ class UserController extends BaseController
      */
     public function show(string $id)
     {
-        try {
-            // Tìm người dùng theo ID
-            $user = User::select('id', 'name', 'email','phone','email','avatar')->findOrFail($id);
-    
-            // Trả về thông tin người dùng dưới dạng JSON
-            return $this->sendResponse($user, 'Thông tin người dùng đã được lấy thành công');
-        } catch (\Throwable $th) {
-            return $this->sendError('Không tìm thấy người dùng.', ['error' => $th->getMessage()], 404);
-        }
+        //
     }
 
     /**

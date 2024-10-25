@@ -18,16 +18,15 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'auth',
 ], function ($router) {
-    Route::post( '/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
-    Route::post('/profile', [AuthController::class, 'profile'])->middleware('auth:api');
     //Đơn hàng
     Route::get('/orders/{id}', [OrderController::class, 'getOrderDetails'])->middleware('auth:api');
     Route::get('/get-orders', [OrderController::class, 'getOrders'])->middleware('auth:api');
     //Thông tin tài khoản
-    Route::get('/{id}', [UserController::class, 'show'])->middleware('auth:api'); // Lấy thông tin người dùng theo id
+    Route::get('/profile', [UserController::class, 'index'])->middleware('auth:api');
     Route::put('/{id}', [UserController::class, 'update'])->middleware('auth:api'); // Cập nhật thông tin người dùng
 });
 
@@ -35,6 +34,8 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'products',
 ], function ($router) {
+    Route::get('/vouchers', [VoucherController::class, 'getVoucher']);
+    Route::post('/vouchers/store-user', [VoucherController::class, 'storeUserVoucher'])->middleware('auth:api');
 
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/search', [ProductController::class, 'search']);
@@ -48,14 +49,14 @@ Route::get('comments/{productId}', [CommentController::class, 'show']);
 Route::group([
     'middleware' => 'api',
     'prefix' => 'categories',
-    ], function ($router) {
+], function ($router) {
 
     Route::get('/', [CategoriesController::class, 'index']);
 });
 
 Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth:api');
-Route::post('/payment', [PaymentController::class, 'processPayment']);
-Route::get('/vouchers', [VoucherController::class, 'getVoucher']);
+Route::get('/info-checkout/{orderId}', [OrderController::class, 'infoCheckout'])->middleware('auth:api');
+Route::post('/payment', [PaymentController::class, 'processPayment'])->middleware('auth:api');
 
 
 // Demo phân quyền
@@ -68,7 +69,7 @@ Route::get('/vouchers', [VoucherController::class, 'getVoucher']);
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
-    Route::get('admin/dashboard',[AdminUserController::class, 'index']);
+    Route::get('admin/dashboard', [AdminUserController::class, 'index']);
 });
 
 

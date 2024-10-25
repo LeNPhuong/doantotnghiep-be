@@ -61,4 +61,8 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims() {
         return [];
     }
+    public function vouchers()
+{
+    return $this->belongsToMany(Voucher::class, 'user_voucher')->withTimestamps();
+}
 }

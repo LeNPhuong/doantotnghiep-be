@@ -65,22 +65,6 @@ class AuthController extends BaseController
         auth()->logout();
         return $this->sendResponse('', 'Đăng xuất thành công');
     }
-    public function profile()
-    {
-        // Lấy người dùng hiện tại
-        $user = auth()->user();
-        // Chọn chỉ những trường cần thiết
-        $success = [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'avatar' => $user->avatar,
-            'role' => $user->role,
-        ];
-
-        return $this->sendResponse($success, 'Vào hồ sơ tài khoản thành công');
-    }
     protected function respondWithToken($token)
     {
         return [

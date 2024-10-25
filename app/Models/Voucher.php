@@ -14,4 +14,8 @@ class Voucher extends Model
     protected $fillable = [
         'code', 'status', 'status', 'discount_type', 'discount_value', 'max_discount_value', 'description', 'quantity', 'used', 'start_date', 'end_date'
     ];
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_voucher')->withTimestamps();
+    }
 }

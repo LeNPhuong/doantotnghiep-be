@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class PaymentController extends BaseController
@@ -14,7 +15,7 @@ class PaymentController extends BaseController
 
         // Lấy thông tin đơn hàng sau khi checkout
         $order = Order::where('user_id', $userId)
-            ->where('status', 'pending') // Đơn hàng đang chờ thanh toán
+            ->where('status_id', 1) // Giả sử '1' là trạng thái "pending"
             ->first();
 
         if (!$order) {
@@ -25,7 +26,7 @@ class PaymentController extends BaseController
         $paymentMethod = $request->input('payment_method'); // Ví dụ: 'credit_card', 'paypal', 'cod'
 
         // Số tiền thanh toán
-        $amount = $order->total; // Tổng giá trị đơn hàng
+        $amount = $order->total_price; // Tổng giá trị đơn hàng
 
         // Xử lý thanh toán và lưu transaction
         try {
@@ -34,15 +35,18 @@ class PaymentController extends BaseController
 
             // Lưu thông tin transaction
             $transaction = Transaction::create([
+                'user_id' => $userId,
                 'order_id' => $order->id,
-                'amount' => $amount,
+                'total_price' => $amount,
+                'note' => $request->input('note', ''), // Lưu ý từ request, nếu có
+                'name' => $request->input('name', ''),
+                'phone' => $request->input('phone', ''),
+                'email' => $request->input('email', ''),
                 'payment_method' => $paymentMethod,
-                'transaction_id' => $transactionId, // Mã giao dịch từ cổng thanh toán
-                'status' => 'paid', // Thanh toán thành công
             ]);
 
             // Cập nhật trạng thái đơn hàng
-            $order->status = 'paid';
+            $order->status_id = 2; // Giả sử '2' là trạng thái "paid"
             $order->save();
 
             return $this->sendResponse($transaction, 'Thanh toán thành công.');
@@ -72,13 +76,13 @@ class PaymentController extends BaseController
     protected function processCreditCardPayment($order, $amount)
     {
         // Gọi API thanh toán và trả về mã giao dịch
-        return 'credit_card_transaction_id';
+        return 'credit_card_transaction_id'; // Thay thế với mã giao dịch thực tế
     }
 
     // Xử lý thanh toán qua PayPal
     protected function processPayPalPayment($order, $amount)
     {
         // Gọi API PayPal và trả về mã giao dịch
-        return 'paypal_transaction_id';
+        return 'paypal_transaction_id'; // Thay thế với mã giao dịch thực tế
     }
 }

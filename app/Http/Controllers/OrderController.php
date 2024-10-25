@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\User;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends BaseController
 {
@@ -23,7 +25,6 @@ class OrderController extends BaseController
         }
 
         return $this->sendResponse($orders, 'Lấy danh sách đơn hàng thành công.');
-
     }
     public function getOrderDetails($orderId)
     {
@@ -37,6 +38,7 @@ class OrderController extends BaseController
 
         return $this->sendResponse($orderDetails, 'Chi tiết đơn hàng.');
     }
+
     public function checkout(Request $request)
     {
         DB::beginTransaction(); // Bắt đầu transaction để đảm bảo dữ liệu nhất quán
@@ -47,13 +49,13 @@ class OrderController extends BaseController
                 return $this->sendError('Giỏ hàng trống!');
             }
 
-            // Kiểm tra voucher (nếu có)
-            $voucher = null;
-            if ($request->voucher_id) {
-                $voucher = Voucher::find($request->voucher_id);
-                if (!$voucher || !$voucher->active || now()->lt($voucher->start_date) || now()->gt($voucher->end_date)) {
-                    return $this->sendError('Voucher không hợp lệ hoặc đã hết hạn!', '', 400);
-                }
+            // Lấy voucher từ người dùng
+            $voucherId = $request->voucher_id; // ID voucher từ request
+            $user = User::with('vouchers')->find(auth()->user()->id);
+            $voucher = $user->vouchers()->find($voucherId); // Lấy voucher từ người dùng
+
+            if ($voucher && (!$voucher->active || now()->lt($voucher->start_date) || now()->gt($voucher->end_date))) {
+                return $this->sendError('Voucher không hợp lệ hoặc đã hết hạn!', '', 400);
             }
 
             // Lấy danh sách product_id từ giỏ hàng
@@ -61,9 +63,8 @@ class OrderController extends BaseController
             // Lấy tất cả sản phẩm một lần
             $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-
             // Kiểm tra xem có đơn hàng nào đang chờ thanh toán hay không
-            $existingOrder = Order::where('user_id', auth()->user()->id)
+            $existingOrder = Order::where('user_id', $user->id)
                 ->where('status_id', 1) // Status 1 có thể là 'đang chờ thanh toán'
                 ->first();
 
@@ -86,12 +87,16 @@ class OrderController extends BaseController
                 }
                 $discount = min($discount, $voucher->max_discount_value); // Không vượt quá giá trị tối đa
                 $totalAmount -= $discount; // Giảm tổng số tiền
+
+                // Xóa voucher sau khi sử dụng
+                $user->vouchers()->detach($voucher->id); // Xóa voucher
             }
 
             // Tạo đơn hàng
             $order = new Order();
-            $order->user_id = auth()->user()->id;
-            $order->voucher_id = $request->voucher_id ?? null; 
+            $order->user_id = $user->id;
+            $order->code = $this->generateOrderCode(); // Lưu mã đơn hàng
+            $order->voucher_id = $voucherId;
             $order->total_price = $totalAmount;
             $order->status_id = 1; // Trạng thái 'đang chờ thanh toán'
             $order->save();
@@ -130,5 +135,23 @@ class OrderController extends BaseController
             DB::rollBack(); // Rollback nếu có lỗi xảy ra
             return $this->sendError('Lỗi định dạng.', ['error' => $th->getMessage()], 404);
         }
+    }
+
+    public function infoCheckout($orderId)
+    {
+        // Lấy danh sách đơn hàng của người dùng, bao gồm thông tin về status
+        $orders = Order::with(['status', 'orderDetails.product', 'user', 'voucher'])->where('id', $orderId)
+            ->get();;
+        // Kiểm tra nếu không có đơn hàng nào
+        if ($orders->isEmpty()) {
+            return $this->sendError('Không có đơn hàng nào!', '', 404);
+        }
+
+        return $this->sendResponse($orders, 'Lấy danh sách đơn hàng thành công.');
+    }
+
+    protected function generateOrderCode()
+    {
+        return 'ORD-' . strtoupper(uniqid()); // Tạo mã đơn hàng duy nhất
     }
 }

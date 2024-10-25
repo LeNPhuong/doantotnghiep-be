@@ -12,7 +12,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
-        'user_id','status_id', 'voucher_id','total_price'
+        'code','user_id', 'status_id', 'voucher_id', 'total_price'
     ];
     public function orderDetails()
     {
@@ -21,5 +21,17 @@ class Order extends Model
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    // Mối quan hệ với User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Mối quan hệ với Voucher
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class, 'voucher_id');
     }
 }
