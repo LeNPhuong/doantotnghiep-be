@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit862859818ddeb65375e02257ceb766ae
+class ComposerStaticInit7e73911ee6582402bf067e0ac5f4afa7
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -346,8 +346,8 @@ class ComposerStaticInit862859818ddeb65375e02257ceb766ae
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -551,6 +551,7 @@ class ComposerStaticInit862859818ddeb65375e02257ceb766ae
         'App\\Contracts\\PathsRepository' => __DIR__ . '/..' . '/laravel/pint/app/Contracts/PathsRepository.php',
         'App\\Factories\\ConfigurationFactory' => __DIR__ . '/..' . '/laravel/pint/app/Factories/ConfigurationFactory.php',
         'App\\Factories\\ConfigurationResolverFactory' => __DIR__ . '/..' . '/laravel/pint/app/Factories/ConfigurationResolverFactory.php',
+        'App\\Http\\Controllers\\Admin\\AdminProductController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AdminProductController.php',
         'App\\Http\\Controllers\\Admin\\AdminUserController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AdminUserController.php',
         'App\\Http\\Controllers\\Admin\\DashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/DashboardController.php',
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
@@ -572,6 +573,7 @@ class ComposerStaticInit862859818ddeb65375e02257ceb766ae
         'App\\Models\\OrderDetail' => __DIR__ . '/../..' . '/app/Models/OrderDetail.php',
         'App\\Models\\Product' => __DIR__ . '/../..' . '/app/Models/Product.php',
         'App\\Models\\Status' => __DIR__ . '/../..' . '/app/Models/Status.php',
+        'App\\Models\\Transaction' => __DIR__ . '/../..' . '/app/Models/Transaction.php',
         'App\\Models\\Unit' => __DIR__ . '/../..' . '/app/Models/Unit.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\Voucher' => __DIR__ . '/../..' . '/app/Models/Voucher.php',
@@ -1367,6 +1369,7 @@ class ComposerStaticInit862859818ddeb65375e02257ceb766ae
         'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
         'Database\\Seeders\\StatusSeeder' => __DIR__ . '/../..' . '/database/seeders/StatusSeeder.php',
         'Database\\Seeders\\UnitsTableSeeder' => __DIR__ . '/../..' . '/database/seeders/UnitsTableSeeder.php',
+        'Database\\Seeders\\VoucherSeeder' => __DIR__ . '/../..' . '/database/seeders/VoucherSeeder.php',
         'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
         'DateException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
         'DateInvalidOperationException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',
@@ -7531,9 +7534,9 @@ class ComposerStaticInit862859818ddeb65375e02257ceb766ae
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit862859818ddeb65375e02257ceb766ae::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit862859818ddeb65375e02257ceb766ae::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit862859818ddeb65375e02257ceb766ae::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit7e73911ee6582402bf067e0ac5f4afa7::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit7e73911ee6582402bf067e0ac5f4afa7::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit7e73911ee6582402bf067e0ac5f4afa7::$classMap;
 
         }, null, ClassLoader::class);
     }

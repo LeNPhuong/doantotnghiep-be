@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CommentController;
@@ -69,7 +70,8 @@ Route::post('/payment', [PaymentController::class, 'processPayment'])->middlewar
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
-    Route::get('admin/dashboard', [AdminUserController::class, 'index']);
+    // Route::get('admin/product/{id}',     [AdminProductController::class, 'update']);
+    Route::put('admin/product/{id}', [AdminProductController::class, 'update']);
 });
 
 
