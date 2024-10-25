@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('note', 191)->nullable();
             $table->string('name')->nullable();
             $table->string('phone', 191)->nullable();
+            $table->string('address',191)->nullable();
             $table->string('email')->nullable();
             $table->enum('payment_method', ['credit_card', 'paypal', 'cod']);
             $table->timestamp('created_at');
