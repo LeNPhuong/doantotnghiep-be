@@ -42,6 +42,7 @@ class PaymentController extends BaseController
                 'name' => $request->input('name', ''),
                 'phone' => $request->input('phone', ''),
                 'email' => $request->input('email', ''),
+                'address' => $request->input('address', ''),
                 'payment_method' => $paymentMethod,
             ]);
 

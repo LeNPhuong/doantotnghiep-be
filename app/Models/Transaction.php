@@ -18,6 +18,7 @@ class Transaction extends Model
         'name',
         'phone',
         'email',
+        'address',
         'payment_method',
     ];
 

@@ -140,7 +140,7 @@ class OrderController extends BaseController
     public function infoCheckout($orderId)
     {
         // Lấy danh sách đơn hàng của người dùng, bao gồm thông tin về status
-        $orders = Order::with(['status', 'orderDetails.product', 'user', 'voucher'])->where('id', $orderId)
+        $orders = Order::with(['status', 'orderDetails.product', 'user.addresses', 'voucher'])->where('id', $orderId)
             ->get();;
         // Kiểm tra nếu không có đơn hàng nào
         if ($orders->isEmpty()) {
@@ -148,6 +148,16 @@ class OrderController extends BaseController
         }
 
         return $this->sendResponse($orders, 'Lấy danh sách đơn hàng thành công.');
+    }
+    public function getOrderByCode(Request $request)
+    {
+        $order = Order::with(['status', 'orderDetails.product', 'user.addresses', 'voucher'])->where('code', $request->code)->first();
+
+        if (!$order) {
+            return $this->sendError('Không tìm thấy đơn hàng.', '', 404);
+        }
+
+        return $this->sendResponse($order, 'Đơn hàng đã được tìm thấy.');
     }
 
     protected function generateOrderCode()

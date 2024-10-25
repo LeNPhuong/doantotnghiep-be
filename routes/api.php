@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CommentController;
@@ -28,6 +29,10 @@ Route::group([
     //Thông tin tài khoản
     Route::get('/profile', [UserController::class, 'index'])->middleware('auth:api');
     Route::put('/{id}', [UserController::class, 'update'])->middleware('auth:api'); // Cập nhật thông tin người dùng
+
+    Route::get('/address/all', [AddressController::class, 'index'])->middleware('auth:api');
+    Route::post('/address/create', [AddressController::class, 'store'])->middleware('auth:api');
+    Route::put('/address/{id}', [AddressController::class, 'update'])->middleware('auth:api');
 });
 
 Route::group([
@@ -57,6 +62,7 @@ Route::group([
 Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth:api');
 Route::get('/info-checkout/{orderId}', [OrderController::class, 'infoCheckout'])->middleware('auth:api');
 Route::post('/payment', [PaymentController::class, 'processPayment'])->middleware('auth:api');
+Route::post('/orders/code', [OrderController::class, 'getOrderByCode'])->middleware('auth:api');
 
 
 // Demo phân quyền
