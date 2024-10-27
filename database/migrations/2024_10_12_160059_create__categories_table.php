@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('active')->default(true); // Trạng thái active (true/false)
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
+            $table->softDeletes();
         });
     }
 

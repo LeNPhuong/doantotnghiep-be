@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CommentController;
@@ -76,10 +77,44 @@ Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancelOrder'])
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
-    Route::get('admin/product',     [AdminProductController::class, 'index']);
-    Route::get('admin/product/{id}',     [AdminProductController::class, 'show']);
-    Route::get('admin/product/search',     [AdminProductController::class, 'search']);
-    Route::put('admin/product/{id}', [AdminProductController::class, 'update']);
+
+    // List sản phẩm
+    Route::get('admin/products',[AdminProductController::class, 'index']);
+    
+    // Tìm kiếm sản phẩm
+    Route::get('admin/product/search',[AdminProductController::class, 'search']);
+    
+    // update sản phẩm 
+    Route::get('admin/product/{id}/update',[AdminProductController::class, 'show']);
+    Route::put('admin/product/{id}/update', [AdminProductController::class, 'update']);
+    
+    // Xóa mềm sản phẩm
+    Route::delete('admin/product/{id}/soft-delete', [AdminProductController::class, 'softDelete']);
+    Route::post('admin/product/{id}/restore', [AdminProductController::class, 'restore']);
+    
+    // Thêm sản phẩm
+    Route::post('admin/product/create', [AdminProductController::class, 'create']);
+    
+    // List danh mục
+    Route::get('admin/categories',[AdminCategoryController::class, 'index']);
+    
+    // Thêm danh mục
+    Route::post('admin/category/create', [AdminCategoryController::class, 'create']);
+
+    // Cập nhật danh mục sản phẩm
+    Route::get('admin/category/{id}/update',[AdminCategoryController::class, 'show']);
+    Route::put('admin/category/{id}/update', [AdminCategoryController::class, 'update']);
+    
+    // Tìm kiếm danh mục 
+    Route::get('admin/category/search',[AdminCategoryController::class, 'search']);
+    
+    // Xóa mềm danh mục
+    Route::delete('admin/category/{id}/soft-delete', [AdminCategoryController::class, 'softDelete']);
+    Route::post('admin/category/{id}/restore', [AdminCategoryController::class, 'restore']);
+    
+    // List user 
+    Route::get('admin/users',[AdminUserController::class, 'index']);
+
 });
 
 

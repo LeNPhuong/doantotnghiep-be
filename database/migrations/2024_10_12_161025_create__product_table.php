@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('made'); // Nơi sản xuất
             $table->timestamps(); // Tạo hai trường create_at và update_at tự động
             $table->boolean('active')->default(true); // Trạng thái active (true/false)
+            $table->softDeletes();
         });
     }
 

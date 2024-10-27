@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
+
+
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $table = 'categories';
 
@@ -15,6 +19,13 @@ class Category extends Model
         'name', 'key', 'active'
     ];
 
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name
+        ];
+    }
     public function products()
     {
         return $this->hasMany(Product::class, 'cate_id');

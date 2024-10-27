@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 191); // Tên đơn vị
             $table->boolean('active')->default(true); // Trạng thái active (true/false)
             $table->timestamps(); // Tạo created_at và updated_at
+            $table->softDeletes();
         });
     }
 
