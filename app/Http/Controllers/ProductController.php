@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends BaseController
 {
@@ -57,10 +58,18 @@ class ProductController extends BaseController
 
     public function search(Request $request)
     {
+        // Kiểm tra yêu cầu đầu vào, đảm bảo 'cancellation_reason' không được để trống
+        $validator = Validator::make($request->all(), [
+            'query' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Lỗi định dạng', $validator->errors());
+        }
         $searchTerm = $request->input('query');
 
         $products = Product::search($searchTerm)->get();
 
-        return response()->json($products);
+        return $this->sendResponse($products, 'Tìm kiếm sản phẩm thành công');
     }
 }
