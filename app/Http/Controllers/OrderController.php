@@ -164,4 +164,31 @@ class OrderController extends BaseController
     {
         return 'ORD-' . strtoupper(uniqid()); // Tạo mã đơn hàng duy nhất
     }
+
+    public function cancelOrder(Request $request, $orderId)
+    {
+        // Kiểm tra yêu cầu đầu vào, đảm bảo 'cancellation_reason' không được để trống
+        $validator = Validator::make($request->all(), [
+            'cancellation_reason' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Lỗi định dạng', $validator->errors());
+        }
+
+        // Lấy đơn hàng
+        $order = Order::findOrFail($orderId);
+
+        // Kiểm tra trạng thái đơn hàng có thể hủy không
+        if ($order->status->id === 4) {
+            return $this->sendError('Đơn hàng đã hoàn thành và không thể hủy.');
+        }
+
+        // Cập nhật trạng thái và lưu lý do hủy
+        $order->status_id = 5;
+        $order->cancellation_reason = $request->cancellation_reason;
+        $order->save();
+
+        return $this->sendResponse($order, 'Đơn hàng đã được hủy thành công.');
+    }
 }

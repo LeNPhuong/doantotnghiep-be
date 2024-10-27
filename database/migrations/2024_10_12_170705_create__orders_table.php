@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('status_id')->nullable()->constrained('status')->onDelete('set null');
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->onDelete('set null');
             $table->float('total_price');
+            $table->text('cancellation_reason')->nullable();
             $table->timestamps();
         });
     }
