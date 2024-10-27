@@ -7,18 +7,56 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
+use PhpParser\Node\Stmt\TryCatch;
 
 class AdminProductController extends BaseController
 {
+    public function index()
+    {
+        try {
+            $products = Cache::remember('active_products', 60, function () {
+                return Product::orderBy('created_at', 'desc')->get();
+            });
+            return $this->sendResponse($products, 'Lấy sản phẩm thành công');
+        } catch (\Throwable $th) {
+            return $this->sendError('Lỗi trong quá trình lấy sản phẩm', ['error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            // Tìm sản phẩm theo ID
+            $product = Cache::remember("product_detail_{$id}", 60, function () use ($id) {
+                return Product::with([
+                    'category' => function ($query) {
+                        $query->where('active', 1); // Lấy danh mục có active = 1
+                    },
+                    'category.units' => function ($query) {
+                        $query->where('active', 1); // Lấy đơn vị có active = 1
+                    }
+                ])->find($id);
+            });
+
+            return $this->sendResponse($product, 'lấy sản phẩm thành công');
+        } catch (\Throwable $th) {
+            return $this->sendError('Sản phẩm không tồn tại', ['error' => $th->getMessage()], 404);
+        }
+    }
     public function update(Request $request, $id)
     {
         try {
             // Tìm sản phẩm theo ID
-            $product = Product::find($id);
-
-            if (!$product) {
-                return response()->json(['error' => 'Sản phẩm không tồn tại'], 404);
-            }
+            $product = Cache::remember("product_detail_{$id}", 60, function () use ($id) {
+                return Product::with([
+                    'category' => function ($query) {
+                        $query->where('active', 1); // Lấy danh mục có active = 1
+                    },
+                    'category.units' => function ($query) {
+                        $query->where('active', 1); // Lấy đơn vị có active = 1 
+                    }
+                ])->find($id);
+            });
 
             // Xác thực dữ liệu
             $validatedData = $request->validate([
@@ -43,14 +81,28 @@ class AdminProductController extends BaseController
             Cache::forget("product_detail_{$id}");
             Cache::forget('active_products');
 
-            return response()->json(['message' => 'Cập nhật sản phẩm thành công', 'product' => $product], 200);
-
+            return $this->sendResponse($product, 'Cập nhật sản phẩm thành công');
+        } catch (\Exception $th) {
+            return $this->sendError('Không tìm thấy sản phẩm.', ['error' => $th->getMessage()], 404);
         } catch (ValidationException $e) {
             // Xử lý lỗi xác thực
             return response()->json(['error' => $e->validator->errors()], 422);
-        } catch (\Exception $e) {
+        } catch (\Exception $th) {
             // Xử lý các lỗi khác
-            return response()->json(['error' => 'Đã xảy ra lỗi, vui lòng thử lại sau.'], 500);
+            return $this->sendError('Có lỗi xảy ra. Vui lòng thử lại sau.', ['error' => $th->getMessage()], 500);
         }
     }
+
+    public function search(Request $request) {
+        try {
+            $inputSearch = $request->input('query');
+
+            $products = Product::search($inputSearch)->get();
+    
+            return $this->sendResponse($products, 'Sản phẩm tìm thấy');
+        } catch (\Throwable $th) {            
+            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm sản phẩm',['error' => $th->getMessage()], 500);
+        }
+    }
+    
 }

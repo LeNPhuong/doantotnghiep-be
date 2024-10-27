@@ -75,7 +75,9 @@ Route::post('/orders/code', [OrderController::class, 'getOrderByCode'])->middlew
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
-    // Route::get('admin/product/{id}',     [AdminProductController::class, 'update']);
+    Route::get('admin/product',     [AdminProductController::class, 'index']);
+    Route::get('admin/product/{id}',     [AdminProductController::class, 'show']);
+    Route::get('admin/product/search',     [AdminProductController::class, 'search']);
     Route::put('admin/product/{id}', [AdminProductController::class, 'update']);
 });
 
