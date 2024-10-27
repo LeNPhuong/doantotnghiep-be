@@ -12,7 +12,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
-        'code','user_id', 'status_id', 'voucher_id', 'total_price'
+        'code','user_id', 'status_id', 'voucher_id', 'total_price','cancellation_reason'
     ];
     public function orderDetails()
     {

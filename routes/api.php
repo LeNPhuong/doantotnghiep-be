@@ -63,6 +63,7 @@ Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth
 Route::get('/info-checkout/{orderId}', [OrderController::class, 'infoCheckout'])->middleware('auth:api');
 Route::post('/payment', [PaymentController::class, 'processPayment'])->middleware('auth:api');
 Route::post('/orders/code', [OrderController::class, 'getOrderByCode'])->middleware('auth:api');
+Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancelOrder'])->middleware('auth:api');
 
 
 // Demo phân quyền
