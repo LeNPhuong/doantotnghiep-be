@@ -24,6 +24,7 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
+    
     //Đơn hàng
     Route::get('/orders/{id}', [OrderController::class, 'getOrderDetails'])->middleware('auth:api');
     Route::get('/get-orders', [OrderController::class, 'getOrders'])->middleware('auth:api');
@@ -35,6 +36,11 @@ Route::group([
     Route::post('/address/create', [AddressController::class, 'store'])->middleware('auth:api');
     Route::put('/address/{id}', [AddressController::class, 'update'])->middleware('auth:api');
 });
+
+Route::post('forgot-password/send-otp', [AuthController::class, 'sendOtp']);
+Route::post('forgot-password/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('forgot-password/reset-password', [AuthController::class, 'resetPassword']);
+
 
 Route::group([
     'middleware' => 'api',
