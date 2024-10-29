@@ -40,7 +40,7 @@ Route::group([
     //Xem thông tin tài khoản
     Route::get('/profile', [UserController::class, 'index'])->middleware('auth:api');
     //Thay đổi thông tin tài khoản
-    Route::put('/{id}', [UserController::class, 'update'])->middleware('auth:api'); // Cập nhật thông tin người dùng
+    Route::put('/update-profile', [UserController::class, 'update'])->middleware('auth:api'); // Cập nhật thông tin người dùng
 
     //Lấy tất cả địa chỉ tài khoản
     Route::get('/address/all', [AddressController::class, 'index'])->middleware('auth:api');

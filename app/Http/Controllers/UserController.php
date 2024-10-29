@@ -16,7 +16,7 @@ class UserController extends BaseController
     {
         try {
             // Tìm người dùng theo ID
-            $user = User::with(['vouchers','addresses'])->select('id', 'name', 'email', 'phone', 'email', 'avatar')->findOrFail(auth()->user()->id);
+            $user = User::with(['vouchers', 'addresses'])->select('id', 'name', 'email', 'phone', 'email', 'avatar')->findOrFail(auth()->user()->id);
 
             // Trả về thông tin người dùng dưới dạng JSON
             return $this->sendResponse($user, 'Thông tin người dùng đã được lấy thành công');
@@ -24,43 +24,10 @@ class UserController extends BaseController
             return $this->sendError('Không tìm thấy người dùng.', ['error' => $th->getMessage()], 404);
         }
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
@@ -76,7 +43,7 @@ class UserController extends BaseController
                     'messages' => $validator->errors()
                 ], 422); // 422 Unprocessable Entity
             }
-            $user = User::findOrFail($id);
+            $user = User::findOrFail(auth()->user()->id);
             $user->name = $request->name;
             $user->phone = $request->phone;
             $user->email = $request->email;
@@ -93,13 +60,5 @@ class UserController extends BaseController
         } catch (\Throwable $th) {
             return $this->sendError('Có lỗi xảy ra. Vui lòng thử lại sau.', ['error' => $th->getMessage()], 500);
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
