@@ -154,10 +154,10 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     
     // user 
     Route::get('admin/users',[AdminUserController::class, 'index']);
+    Route::get('admin/user/search',[AdminUserController::class, 'search']);
     Route::get('admin/user/{id}',[AdminUserController::class, 'show']);
     Route::get('admin/user/{id}/update',[AdminUserController::class, 'edit']);
     Route::put('admin/user/{id}/update',[AdminUserController::class, 'update']);
-    Route::get('admin/user/search',[AdminUserController::class, 'search']);
     Route::delete('admin/user/{id}/delete',[AdminUserController::class, 'softDelete']);
     Route::post('admin/user/{id}/restore',[AdminUserController::class, 'restore']);
     Route::post('admin/user/create',[AdminUserController::class, 'create']);
