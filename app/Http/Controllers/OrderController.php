@@ -49,23 +49,28 @@ class OrderController extends BaseController
                 return $this->sendError('Giỏ hàng trống!');
             }
 
-            // Lấy voucher từ người dùng
-            $voucherId = $request->voucher_id; // ID voucher từ request
+            // Lấy thông tin người dùng hiện tại
             $user = User::with('vouchers')->find(auth()->user()->id);
-            $voucher = $user->vouchers()->find($voucherId); // Lấy voucher từ người dùng
 
-            if ($voucher && (!$voucher->active || now()->lt($voucher->start_date) || now()->gt($voucher->end_date))) {
-                return $this->sendError('Voucher không hợp lệ hoặc đã hết hạn!', '', 400);
+            // Lấy voucher từ request nếu có
+            $voucherId = $request->voucher_id;
+            $voucher = null;
+
+            if ($voucherId) {
+                // Kiểm tra xem voucher có thuộc sở hữu của người dùng không
+                $voucher = $user->vouchers()->where('vouchers.id', $voucherId)->first();
+                if (!$voucher || !$voucher->active || now()->lt($voucher->start_date) || now()->gt($voucher->end_date)) {
+                    return $this->sendError('Voucher không hợp lệ hoặc đã hết hạn!', '', 400);
+                }
             }
 
             // Lấy danh sách product_id từ giỏ hàng
             $productIds = array_column($cart, 'id');
-            // Lấy tất cả sản phẩm một lần
             $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-            // Kiểm tra xem có đơn hàng nào đang chờ thanh toán hay không
+            // Kiểm tra xem có đơn hàng nào đang chờ thanh toán không
             $existingOrder = Order::where('user_id', $user->id)
-                ->where('status_id', 1) // Status 1 có thể là 'đang chờ thanh toán'
+                ->where('status_id', 1) // Trạng thái "đang chờ thanh toán"
                 ->first();
 
             if ($existingOrder) {
@@ -77,44 +82,38 @@ class OrderController extends BaseController
                 return $item['price'] * $item['quantity'];
             }, $cart));
 
-            // Nếu có voucher hợp lệ, áp dụng chiết khấu
+            // Áp dụng chiết khấu nếu có voucher hợp lệ
             if ($voucher) {
-                $discount = 0;
-                if ($voucher->discount_type === 'percentage') {
-                    $discount = ($totalAmount * $voucher->discount_value) / 100;
-                } else {
-                    $discount = $voucher->discount_value;
-                }
+                $discount = $voucher->discount_type === 'percentage'
+                    ? ($totalAmount * $voucher->discount_value) / 100
+                    : $voucher->discount_value;
+
                 $discount = min($discount, $voucher->max_discount_value); // Không vượt quá giá trị tối đa
                 $totalAmount -= $discount; // Giảm tổng số tiền
 
                 // Xóa voucher sau khi sử dụng
-                $user->vouchers()->detach($voucher->id); // Xóa voucher
+                $user->vouchers()->detach($voucher->id);
             }
 
             // Tạo đơn hàng
             $order = new Order();
             $order->user_id = $user->id;
-            $order->code = $this->generateOrderCode(); // Lưu mã đơn hàng
+            $order->code = $this->generateOrderCode();
             $order->voucher_id = $voucherId;
             $order->total_price = $totalAmount;
-            $order->status_id = 1; // Trạng thái 'đang chờ thanh toán'
+            $order->status_id = 1; // Trạng thái "đang chờ thanh toán"
             $order->save();
 
             // Lưu từng sản phẩm vào bảng order_items
             foreach ($cart as $item) {
                 $product = $products->get($item['id']);
 
-                // Kiểm tra nếu sản phẩm tồn tại và số lượng có đủ không
                 if ($product && $product->quantity >= $item['quantity']) {
-                    // Giảm số lượng tồn kho
                     $product->quantity -= $item['quantity'];
                     $product->save();
 
-                    // Xóa cache sau khi cập nhật
                     Cache::forget('active_products');
 
-                    // Lưu chi tiết đơn hàng
                     OrderDetail::create([
                         'order_id' => $order->id,
                         'product_id' => $item['id'],
@@ -123,16 +122,15 @@ class OrderController extends BaseController
                         'unit' => $item['unit'],
                     ]);
                 } else {
-                    // Nếu sản phẩm không đủ hàng, rollback và trả về lỗi
                     DB::rollBack();
                     return $this->sendError("Sản phẩm {$product->name} không đủ hàng trong kho!", '', 400);
                 }
             }
 
-            DB::commit(); // Xác nhận transaction nếu không có lỗi xảy ra
+            DB::commit();
             return $this->sendResponse($order, 'Đặt hàng thành công!');
         } catch (\Throwable $th) {
-            DB::rollBack(); // Rollback nếu có lỗi xảy ra
+            DB::rollBack();
             return $this->sendError('Lỗi định dạng.', ['error' => $th->getMessage()], 404);
         }
     }
@@ -167,6 +165,13 @@ class OrderController extends BaseController
 
     public function cancelOrder(Request $request, $orderId)
     {
+        // Lấy đơn hàng và kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
+        $order = Order::where('id', $orderId)->where('user_id', auth()->user()->id)->first();
+
+        if (!$order) {
+            return $this->sendError('Không tìm thấy đơn hàng hoặc bạn không có quyền hủy đơn hàng này.', [], 404);
+        }
+
         // Kiểm tra yêu cầu đầu vào, đảm bảo 'cancellation_reason' không được để trống
         $validator = Validator::make($request->all(), [
             'cancellation_reason' => 'required|string'
