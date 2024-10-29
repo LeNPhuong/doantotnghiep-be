@@ -7,6 +7,7 @@ use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class VoucherController extends BaseController
 {
@@ -24,7 +25,7 @@ class VoucherController extends BaseController
                 ->where('end_date', '>=', $currentDate)
                 ->get();
             if ($vouchers->isEmpty()) {
-                return $this->sendError('Không có voucher nào hợp lệ!', '', 400);
+                return $this->sendError('Danh sách vouchers trống', '', 400);
             }
             return $this->sendResponse($vouchers, 'Lấy danh sách voucher thành công!');
         } catch (\Throwable $th) {
@@ -34,9 +35,15 @@ class VoucherController extends BaseController
 
     public function storeUserVoucher(Request $request)
     {
-        $request->validate([
+
+        $validator = Validator::make($request->all(), [
             'voucher_id' => 'required|exists:vouchers,id',
         ]);
+
+
+        if ($validator->fails()) {
+            return $this->sendError('Lỗi định dạng', $validator->errors());
+        }
 
         DB::beginTransaction(); // Bắt đầu giao dịch
 
