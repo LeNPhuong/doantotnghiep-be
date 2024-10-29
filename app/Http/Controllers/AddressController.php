@@ -10,6 +10,9 @@ class AddressController extends BaseController
     public function index()
     {
         $addresses = Address::where('user_id', auth()->user()->id)->get();
+        if (count($addresses) == 0) {
+            return $this->sendError('Danh sách địa chỉ trống');
+        }
         return $this->sendResponse($addresses, 'Lấy danh sách địa chỉ thành công');
     }
     public function store(Request $request)
@@ -17,7 +20,7 @@ class AddressController extends BaseController
         try {
             $request->validate([
                 'address' => 'required|string|max:225',
-                'active' => 'boolean',
+                'active' => 'required|boolean',
             ]);
 
             // Nếu địa chỉ mới là active, hủy active các địa chỉ cũ của user
