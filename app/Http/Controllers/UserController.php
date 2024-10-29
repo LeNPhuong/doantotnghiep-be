@@ -16,7 +16,7 @@ class UserController extends BaseController
     {
         try {
             // Tìm người dùng theo ID
-            $user = User::with('vouchers')->select('id', 'name', 'email', 'phone', 'email', 'avatar')->findOrFail(auth()->user()->id);
+            $user = User::with(['vouchers','addresses'])->select('id', 'name', 'email', 'phone', 'email', 'avatar')->findOrFail(auth()->user()->id);
 
             // Trả về thông tin người dùng dưới dạng JSON
             return $this->sendResponse($user, 'Thông tin người dùng đã được lấy thành công');
