@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,11 @@ class CommentController extends BaseController
     }
     public function store(Request $request, $productId)
     {
+        // Kiểm tra nếu sản phẩm tồn tại
+        $product = Product::find($productId);
+        if (!$product) {
+            return $this->sendError('Sản phẩm không tồn tại', [], 404);
+        }
         // Tạo bộ validate cho dữ liệu bình luận
         $validator = Validator::make($request->all(), [
             'rating' => 'required|integer|min:1|max:5',
