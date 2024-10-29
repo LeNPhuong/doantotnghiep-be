@@ -7,7 +7,6 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
-use PhpParser\Node\Stmt\TryCatch;
 
 class AdminProductController extends BaseController
 {
@@ -27,6 +26,26 @@ class AdminProductController extends BaseController
     }
 
     public function show($id)
+    {
+        try {
+            // Tìm sản phẩm theo ID
+            $product = Cache::remember("product_detail_{$id}", 60, function () use ($id) {
+                return Product::with([
+                    'category' => function ($query) {
+                        $query->where('active', 1); // Lấy danh mục có active = 1
+                    },
+                    'category.units' => function ($query) {
+                        $query->where('active', 1); // Lấy đơn vị có active = 1
+                    }
+                ])->find($id);
+            });
+
+            return $this->sendResponse($product, 'lấy sản phẩm thành công');
+        } catch (\Throwable $th) {
+            return $this->sendError('Sản phẩm không tồn tại', ['error' => $th->getMessage()], 404);
+        }
+    }
+    public function edit($id)
     {
         try {
             // Tìm sản phẩm theo ID

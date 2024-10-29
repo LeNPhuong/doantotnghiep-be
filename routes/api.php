@@ -118,8 +118,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     // Tìm kiếm sản phẩm
     Route::get('admin/product/search',[AdminProductController::class, 'search']);
     
+    // Chi tiết sản phẩm
+    Route::get('admin/product/{id}',[AdminProductController::class, 'show']);
+
     // update sản phẩm 
-    Route::get('admin/product/{id}/update',[AdminProductController::class, 'show']);
+    Route::get('admin/product/{id}/update',[AdminProductController::class, 'edit']);
     Route::put('admin/product/{id}/update', [AdminProductController::class, 'update']);
     
     // Xóa mềm sản phẩm
@@ -135,8 +138,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     // Thêm danh mục
     Route::post('admin/category/create', [AdminCategoryController::class, 'create']);
 
+    // Chi tiết danh mục
+    Route::get('admin/category/{id}',[AdminCategoryController::class, 'show']);
+
     // Cập nhật danh mục sản phẩm
-    Route::get('admin/category/{id}/update',[AdminCategoryController::class, 'show']);
+    Route::get('admin/category/{id}/update',[AdminCategoryController::class, 'edit']);
     Route::put('admin/category/{id}/update', [AdminCategoryController::class, 'update']);
     
     // Tìm kiếm danh mục 
@@ -146,8 +152,16 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::delete('admin/category/{id}/soft-delete', [AdminCategoryController::class, 'softDelete']);
     Route::post('admin/category/{id}/restore', [AdminCategoryController::class, 'restore']);
     
-    // List user 
+    // user 
     Route::get('admin/users',[AdminUserController::class, 'index']);
+    Route::get('admin/user/{id}',[AdminUserController::class, 'show']);
+    Route::get('admin/user/{id}/update',[AdminUserController::class, 'edit']);
+    Route::put('admin/user/{id}/update',[AdminUserController::class, 'update']);
+    Route::get('admin/user/search',[AdminUserController::class, 'search']);
+    Route::delete('admin/user/{id}/delete',[AdminUserController::class, 'softDelete']);
+    Route::post('admin/user/{id}/restore',[AdminUserController::class, 'restore']);
+    Route::post('admin/user/create',[AdminUserController::class, 'create']);
+
 
 });
 

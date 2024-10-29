@@ -32,6 +32,15 @@ class AdminCategoryController extends BaseController
             return $this->sendError('Không tìm thấy danh mục', ['error' => $th->getMessage()], 404);
         }
     }
+    public function edit($id)
+    {
+        try {
+            $category = Category::find($id);
+            return $this->sendResponse($category, 'Lấy danh mục thành công');
+        } catch (\Throwable $th) {
+            return $this->sendError('Không tìm thấy danh mục', ['error' => $th->getMessage()], 404);
+        }
+    }
     public function update(Request $request, $id)
     {
         try {
