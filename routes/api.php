@@ -100,6 +100,8 @@ Route::post('/orders/code', [OrderController::class, 'getOrderByCode'])->middlew
 //Hủy đơn hàng cụ thể
 Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancelOrder'])->middleware('auth:api');
 
+Route::post('/test', [PaymentController::class, 'test']);
+
 
 // Demo phân quyền
 // Route::group([

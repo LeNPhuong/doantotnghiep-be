@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('phone', 191)->nullable();
             $table->string('address',191)->nullable();
             $table->string('email')->nullable();
-            $table->enum('payment_method', ['credit_card', 'paypal', 'cod']);
+            $table->enum('payment_method', ['momo', 'cod']);
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
         });
