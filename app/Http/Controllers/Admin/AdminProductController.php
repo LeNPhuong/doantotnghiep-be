@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Product;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +17,7 @@ class AdminProductController extends BaseController
             $products = Cache::remember('active_products', 60, function () {
                 return Product::orderBy('created_at', 'desc')->get();
             });
-            if($products->isEmpty()) {
+            if ($products->isEmpty()) {
                 return $this->sendResponse($products, 'Chưa có sản phẩm');
             }
             return $this->sendResponse($products, 'Lấy sản phẩm thành công');
@@ -67,6 +68,7 @@ class AdminProductController extends BaseController
     }
     public function update(Request $request, $id)
     {
+
         try {
             $product = Cache::remember("product_detail_{$id}", 60, function () use ($id) {
                 return Product::with([
@@ -84,7 +86,7 @@ class AdminProductController extends BaseController
                 'name' => 'nullable|string|max:255',
                 'price' => 'nullable|numeric|min:0',
                 'sale' => 'nullable|integer|min:0|max:100',
-                'img' => 'nullable|string|max:255',
+                'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'quantity' => 'nullable|integer|min:0',
                 'description' => 'nullable|string',
                 'made' => 'nullable|string|max:255',
@@ -92,8 +94,20 @@ class AdminProductController extends BaseController
             ]);
 
             // Loại bỏ các trường không có trong request để giữ nguyên giá trị cũ
-            $dataToUpdate = array_filter($validatedData, fn($value) => !is_null($value));
+            $dataToUpdate = array_filter($validatedData, fn ($value) => !is_null($value));
 
+            // Xóa ảnh cũ và upload ảnh mới nếu có
+            if ($request->hasFile('img')) {
+                // Xóa ảnh cũ trên Cloudinary
+                if ($product->img_public_id) {
+                    Cloudinary::destroy($product->img_public_id);
+                }
+
+                // Upload ảnh mới lên Cloudinary
+                $uploadedFile = Cloudinary::upload($request->file('img')->getRealPath());
+                $dataToUpdate['img'] = $uploadedFile->getSecurePath(); // Cập nhật URL ảnh mới
+                $dataToUpdate['img_public_id'] = $uploadedFile->getPublicId(); // Cập nhật public_id ảnh mới
+            }
             $product->update($dataToUpdate);
 
             // Xóa cache sản phẩm (nếu cần)
@@ -156,16 +170,23 @@ class AdminProductController extends BaseController
                 'name' => 'required|string|max:255',
                 'price' => 'required|numeric|min:0',
                 'sale' => 'nullable|integer|min:0|max:100',
-                'img' => 'nullable|string|max:255',
+                'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'quantity' => 'required|integer|min:0',
                 'description' => 'nullable|string',
                 'made' => 'nullable|string|max:255',
                 'active' => 'boolean',
             ]);
 
+            // Upload ảnh lên Cloudinary nếu có
+            if ($request->hasFile('img')) {
+                $uploadedFile = Cloudinary::upload($request->file('img')->getRealPath());
+                $validatedData['img'] = $uploadedFile->getSecurePath(); // Lưu URL ảnh
+                $validatedData['img_public_id'] = $uploadedFile->getPublicId(); // Lưu public_id ảnh
+            }
+            
             $product = Product::create($validatedData);
 
-            Cache::forget('active_products'); 
+            Cache::forget('active_products');
 
             Cache::forget("product_detail_{$product->id}");
 

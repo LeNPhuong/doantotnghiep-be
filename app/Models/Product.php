@@ -15,7 +15,7 @@ class Product extends Model
 
     protected $fillable = [
         'id', 'cate_id', 'name', 'price', 'sale', 'img',
-        'quantity', 'description', 'made', 'active'
+        'quantity', 'description', 'made', 'active','img_public_id'
     ];
     public function toSearchableArray()
     {

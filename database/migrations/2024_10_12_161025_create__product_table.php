@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2); // Giá sản phẩm (số thập phân)
             $table->integer('sale')->unsigned()->default(0); // Sale (phần trăm giảm giá, không lớn hơn 100 và không nhỏ hơn 0)
             $table->string('img'); // Link ảnh sản phẩm
+            $table->string('img_public_id')->nullable(); // Tạo cột img_public_id để lưu public_id của ảnh
             $table->unsignedInteger('quantity'); // Số lượng sản phẩm
             $table->text('description'); // Mô tả sản phẩm
             $table->string('made'); // Nơi sản xuất
