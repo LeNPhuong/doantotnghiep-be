@@ -88,6 +88,8 @@ Route::group([
 ], function ($router) {
     //Lấy tất cả danh mục sản phẩm
     Route::get('/', [CategoriesController::class, 'index']);
+    Route::get('/{id}/products', [CategoriesController::class, 'getProductsByCategory']);
+
 });
 //Mua hàng
 Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth:api');
