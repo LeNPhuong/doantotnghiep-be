@@ -339,6 +339,713 @@
                     }
                 ]
             }
+        },
+        "/api/auth/get-orders": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Lấy danh sách đơn hàng của người dùng",
+                "description": "Trả về danh sách đơn hàng bao gồm thông tin trạng thái và chi tiết sản phẩm.",
+                "operationId": "getOrders",
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách đơn hàng thành công.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "status": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Đang xử lý"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "orderDetails": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "quantity": {
+                                                                    "type": "integer",
+                                                                    "example": 2
+                                                                },
+                                                                "product": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string",
+                                                                            "example": "Sản phẩm A"
+                                                                        },
+                                                                        "price": {
+                                                                            "type": "number",
+                                                                            "format": "float",
+                                                                            "example": 150.5
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy danh sách đơn hàng thành công."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không có đơn hàng nào!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không có đơn hàng nào!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/orders/{orderId}/details": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Lấy chi tiết đơn hàng",
+                "description": "Trả về chi tiết của đơn hàng theo ID, bao gồm thông tin sản phẩm.",
+                "operationId": "getOrderDetails",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "ID của đơn hàng cần lấy chi tiết.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chi tiết đơn hàng thành công.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "quantity": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "product": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 10
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Sản phẩm A"
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 150.5
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Chi tiết đơn hàng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Đơn hàng không tồn tại hoặc không có chi tiết!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn hàng không tồn tại hoặc không có chi tiết!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/checkout": {
+            "post": {
+                "summary": "Xử lý checkout đơn hàng",
+                "description": "Tạo đơn hàng mới từ giỏ hàng của người dùng",
+                "operationId": "checkout",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cart"
+                                ],
+                                "properties": {
+                                    "cart": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID của sản phẩm",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "quantity": {
+                                                    "description": "Số lượng sản phẩm",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "price": {
+                                                    "description": "Giá sản phẩm",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100
+                                                },
+                                                "unit": {
+                                                    "description": "Đơn vị sản phẩm",
+                                                    "type": "string",
+                                                    "example": "1kg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "voucher_id": {
+                                        "description": "ID của voucher (nếu có)",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đặt hàng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Thông tin đơn hàng",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID của đơn hàng",
+                                                    "type": "integer"
+                                                },
+                                                "code": {
+                                                    "description": "Mã đơn hàng",
+                                                    "type": "string"
+                                                },
+                                                "total_price": {
+                                                    "description": "Tổng giá trị đơn hàng",
+                                                    "type": "number",
+                                                    "format": "float"
+                                                },
+                                                "status_id": {
+                                                    "description": "Trạng thái đơn hàng",
+                                                    "type": "integer"
+                                                },
+                                                "created_at": {
+                                                    "description": "Thời gian tạo đơn hàng",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Thời gian cập nhật đơn hàng",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng hoặc dữ liệu không hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Thông báo lỗi",
+                                            "type": "string"
+                                        },
+                                        "errors": {
+                                            "description": "Chi tiết lỗi",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Lỗi không tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Thông báo lỗi",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/info-checkout/{orderId}": {
+            "get": {
+                "summary": "Lấy thông tin đơn hàng vừa checkout để thanh toán",
+                "description": "Trả về thông tin chi tiết của đơn hàng theo ID",
+                "operationId": "infoCheckout",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "ID của đơn hàng cần lấy thông tin",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lấy thông tin đơn hàng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "ID của đơn hàng",
+                                                "type": "integer"
+                                            },
+                                            "code": {
+                                                "description": "Mã đơn hàng",
+                                                "type": "string"
+                                            },
+                                            "total_price": {
+                                                "description": "Tổng giá trị đơn hàng",
+                                                "type": "number",
+                                                "format": "float"
+                                            },
+                                            "status": {
+                                                "description": "Trạng thái đơn hàng",
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "ID trạng thái",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Tên trạng thái",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "orderDetails": {
+                                                "description": "Chi tiết sản phẩm trong đơn hàng",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "product": {
+                                                            "description": "Thông tin sản phẩm",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "description": "ID sản phẩm",
+                                                                    "type": "integer"
+                                                                },
+                                                                "name": {
+                                                                    "description": "Tên sản phẩm",
+                                                                    "type": "string"
+                                                                },
+                                                                "price": {
+                                                                    "description": "Giá sản phẩm",
+                                                                    "type": "number",
+                                                                    "format": "float"
+                                                                },
+                                                                "unit": {
+                                                                    "description": "Đơn vị sản phẩm",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "quantity": {
+                                                            "description": "Số lượng sản phẩm trong đơn hàng",
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "user": {
+                                                "description": "Thông tin người dùng",
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "ID người dùng",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Tên người dùng",
+                                                        "type": "string"
+                                                    },
+                                                    "addresses": {
+                                                        "description": "Danh sách địa chỉ của người dùng",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "description": "ID địa chỉ",
+                                                                    "type": "integer"
+                                                                },
+                                                                "address": {
+                                                                    "description": "Địa chỉ",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "voucher": {
+                                                "description": "Thông tin voucher (nếu có)",
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "ID voucher",
+                                                        "type": "integer"
+                                                    },
+                                                    "code": {
+                                                        "description": "Mã voucher",
+                                                        "type": "string"
+                                                    },
+                                                    "discount_value": {
+                                                        "description": "Giá trị chiết khấu của voucher",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Thông báo lỗi",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/orders/code": {
+            "post": {
+                "summary": "Lấy đơn hàng theo mã",
+                "description": "Tìm kiếm đơn hàng theo mã code",
+                "operationId": "getOrderByCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "code": {
+                                        "description": "Mã đơn hàng cần tìm.",
+                                        "type": "string",
+                                        "example": "ORD123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đơn hàng đã được tìm thấy.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy đơn hàng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/orders/{orderId}/cancel": {
+            "delete": {
+                "summary": "Hủy đơn hàng",
+                "description": "Xóa đơn hàng bằng id của order",
+                "operationId": "cancelOrder",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "ID của đơn hàng cần hủy",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cancellation_reason": {
+                                        "type": "string",
+                                        "example": "Đơn hàng không còn cần thiết"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đơn hàng đã được hủy thành công.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng hoặc không có quyền hủy đơn hàng.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy đơn hàng hoặc bạn không có quyền hủy đơn hàng này."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Không thể hủy đơn hàng đã hoàn thành.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn hàng đã hoàn thành và không thể hủy."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
         }
     },
     "components": {

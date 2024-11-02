@@ -32,7 +32,7 @@ Route::group([
     
     //Đơn hàng
     //Lấy chi tiết đơn hàng
-    Route::get('/orders/{id}', [OrderController::class, 'getOrderDetails'])->middleware('auth:api');
+    Route::get('/orders/{orderId}/details', [OrderController::class, 'getOrderDetails'])->middleware('auth:api');
     //Lấy tất cả đơn hàng
     Route::get('/get-orders', [OrderController::class, 'getOrders'])->middleware('auth:api');
 
@@ -100,7 +100,7 @@ Route::post('/payment', [PaymentController::class, 'processPayment'])->middlewar
 //Tìm mã code của đơn hàng
 Route::post('/orders/code', [OrderController::class, 'getOrderByCode'])->middleware('auth:api');
 //Hủy đơn hàng cụ thể
-Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancelOrder'])->middleware('auth:api');
+Route::delete('/orders/{orderId}/cancel', [OrderController::class, 'cancelOrder'])->middleware('auth:api');
 
 Route::post('/test', [PaymentController::class, 'test']);
 
