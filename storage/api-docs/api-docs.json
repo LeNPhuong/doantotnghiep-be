@@ -1046,6 +1046,240 @@
                     }
                 ]
             }
+        },
+        "/api/auth/profile": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Lấy thông tin người dùng",
+                "description": "Lấy thông tin người dùng",
+                "operationId": "index",
+                "responses": {
+                    "200": {
+                        "description": "Thông tin người dùng đã được lấy thành công.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Nguyễn Văn A"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "example@example.com"
+                                        },
+                                        "phone": {
+                                            "type": "string",
+                                            "example": "0123456789"
+                                        },
+                                        "avatar": {
+                                            "type": "string",
+                                            "example": "http://example.com/avatar.jpg"
+                                        },
+                                        "vouchers": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "VOUCHER123"
+                                                    },
+                                                    "discount_value": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 10.5
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "addresses": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "street": {
+                                                        "type": "string",
+                                                        "example": "123 Đường ABC"
+                                                    },
+                                                    "city": {
+                                                        "type": "string",
+                                                        "example": "Hà Nội"
+                                                    },
+                                                    "country": {
+                                                        "type": "string",
+                                                        "example": "Việt Nam"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy người dùng.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy người dùng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/update-profile": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Cập nhật thông tin người dùng",
+                "description": "Cập nhật thông tin người dùng, bao gồm tên, số điện thoại, email và avatar.",
+                "operationId": "update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Tên người dùng",
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "example": "Nguyễn Văn A"
+                                    },
+                                    "phone": {
+                                        "description": "Số điện thoại người dùng",
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "example": "0123456789"
+                                    },
+                                    "email": {
+                                        "description": "Địa chỉ email người dùng",
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "example": "example@example.com"
+                                    },
+                                    "_method": {
+                                        "type": "string",
+                                        "example": "put"
+                                    },
+                                    "avatar": {
+                                        "description": "Tải lên hình ảnh avatar (bắt buộc nếu có)",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Thông tin tài khoản đã được cập nhật thành công.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Nguyễn Văn A"
+                                        },
+                                        "phone": {
+                                            "type": "string",
+                                            "example": "0123456789"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "example@example.com"
+                                        },
+                                        "avatar": {
+                                            "type": "string",
+                                            "example": "http://example.com/avatar.jpg"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Lỗi định dạng dữ liệu đầu vào.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng"
+                                        },
+                                        "messages": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Có lỗi xảy ra trong quá trình cập nhật.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra. Vui lòng thử lại sau."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
         }
     },
     "components": {
