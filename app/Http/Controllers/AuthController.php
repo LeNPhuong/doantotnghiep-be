@@ -8,8 +8,78 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
+/** 
+ * @OA\Info(
+ *  title="Document API Tiện Lợi Xanh", 
+ *  version="1.0.0"
+ * )
+ * 
+ * @OA\SecurityScheme(
+ *     securityScheme="bearer",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     description="Nhập token JWT của bạn trong trường này"
+ * )
+ */
 class AuthController extends BaseController
 {
+    /**
+     * @OA\Post(
+     *     path="/api/auth/register",
+     *     tags={"auth"},
+     *     summary="Đăng ký người dùng mới",
+     *     description="Endpoint này cho phép người dùng mới đăng ký với tên, số điện thoại, email và mật khẩu.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "phone", "email", "password", "c_password"},
+     *             @OA\Property(property="name", type="string", example="Nguyễn Văn A", description="Họ và tên của người dùng"),
+     *             @OA\Property(property="phone", type="string", example="0398981104", description="Số điện thoại của người dùng"),
+     *             @OA\Property(property="email", type="string", example="nguyenvana@example.com", description="Địa chỉ email của người dùng"),
+     *             @OA\Property(property="password", type="string", example="Password@123", description="Mật khẩu của người dùng (tối thiểu 6 ký tự, phải bao gồm chữ cái, số và ký tự đặc biệt)"),
+     *             @OA\Property(property="c_password", type="string", example="Password@123", description="Xác nhận mật khẩu của người dùng")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Người dùng đã được đăng ký thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="user", type="object", 
+     *                 @OA\Property(property="id", type="integer", example=1, description="ID của người dùng"),
+     *                 @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
+     *                 @OA\Property(property="phone", type="string", example="+84123456789"),
+     *                 @OA\Property(property="email", type="string", example="nguyenvana@example.com")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Đăng ký tài khoản thành công.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Lỗi xác thực",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", example="Lỗi định dạng"),
+     *             @OA\Property(property="validation_errors", type="object",
+     *                 @OA\Property(property="name", type="array", @OA\Items(type="string", example="Trường tên là bắt buộc.")),
+     *                 @OA\Property(property="phone", type="array", @OA\Items(type="string", example="Trường điện thoại là bắt buộc.")),
+     *                 @OA\Property(property="email", type="array", @OA\Items(type="string", example="Email đã được sử dụng.")),
+     *                 @OA\Property(property="password", type="array", @OA\Items(type="string", example="Mật khẩu phải có ít nhất 6 ký tự.")),
+     *                 @OA\Property(property="c_password", type="array", @OA\Items(type="string", example="Mật khẩu xác nhận và mật khẩu phải khớp."))
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi máy chủ nội bộ",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Có lỗi xảy ra, vui lòng thử lại.")
+     *         )
+     *     )
+     * )
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -27,15 +97,54 @@ class AuthController extends BaseController
         ]);
 
         if ($validator->fails()) {
-            return $this->sendError('Lỗi định dạng', $validator->errors());
+            return $this->sendError('Lỗi định dạng', $validator->errors(), 400);
         }
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
         $success['user'] = $user;
-        return $this->sendResponse($success, 'Đăng ký tài khoản thành công.');
+        return $this->sendResponse($success, 'Đăng ký tài khoản thành công.', 201);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/login",
+     *     tags={"auth"},
+     *     summary="Đăng nhập",
+     *     description="Phương thức này cho phép người dùng đăng nhập vào hệ thống và nhận token.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="your_password"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Đăng nhập thành công.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="your_jwt_token_here"),
+     *             @OA\Property(property="message", type="string", example="Đăng nhập thành công"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Không được chấp nhận.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthorized"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Người dùng không tìm thấy hoặc không hoạt động.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="User not found or inactive"),
+     *         )
+     *     ),
+     * )
+     */
     public function login()
     {
         $credentials = request(['email', 'password']);
@@ -55,16 +164,75 @@ class AuthController extends BaseController
         $success = $this->respondWithToken($token);
         return $this->sendResponse($success, 'Đăng nhập thành công');
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/refresh",
+     *     tags={"auth"},
+     *     summary="Làm mới token",
+     *     description="Phương thức này cho phép người dùng làm mới token JWT để nhận thông tin tài khoản mới.",
+     *     security={{"bearer": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Refresh token thành công.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="new_jwt_token_here"),
+     *             @OA\Property(property="message", type="string", example="Đã refresh thông tin tài khoản"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Không được chấp nhận.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthorized"),
+     *         )
+     *     )
+     * )
+     */
     public function refresh()
     {
-        $success = $this->respondWithToken(auth()->refresh());
-        return $this->sendResponse($success, 'Đã refresh thông tin tài khoản');
+        try {
+            // Làm mới token
+            $token = auth()->refresh();
+            $success = $this->respondWithToken($token);
+            return $this->sendResponse($success, 'Đã refresh thông tin tài khoản');
+        } catch (\Exception $e) {
+            // Bắt lỗi nếu refresh không thành công
+            return $this->sendError('Không được chấp nhận', ['error' => 'Unauthorized'], 401);
+        }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/logout",
+     *     tags={"auth"},
+     *     summary="Đăng xuất người dùng",
+     *     description="Thực hiện đăng xuất cho người dùng đã xác thực.",
+     *     security={{"bearer": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Đăng xuất thành công"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Người dùng không được phép (Unauthorized)"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi máy chủ nội bộ"
+     *     ),
+     * )
+     */
     public function logout()
     {
-        auth()->logout();
-        return $this->sendResponse('', 'Đăng xuất thành công');
+        try {
+            auth()->logout();
+            return $this->sendResponse('', 'Đăng xuất thành công');
+        } catch (\Exception $e) {
+            return $this->sendError('Đã xảy ra lỗi', ['error' => 'Không thể thực hiện đăng xuất'], 500);
+        }
     }
+
     protected function respondWithToken($token)
     {
         return [
@@ -73,5 +241,4 @@ class AuthController extends BaseController
             'expires_in' => auth()->factory()->getTTL() * 60, // thời gian sống của token
         ];
     }
-
 }
