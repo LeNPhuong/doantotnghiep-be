@@ -8,20 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
-/** 
- * @OA\Info(
- *  title="Document API Tiện Lợi Xanh", 
- *  version="1.0.0"
- * )
- * 
- * @OA\SecurityScheme(
- *     securityScheme="bearer",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT",
- *     description="Nhập token JWT của bạn trong trường này"
- * )
- */
+
 class AuthController extends BaseController
 {
     /**
@@ -148,7 +135,6 @@ class AuthController extends BaseController
     public function login()
     {
         $credentials = request(['email', 'password']);
-
         $user = User::where('email', $credentials['email'])->first();
 
         // Kiểm tra nếu người dùng không tồn tại hoặc không hoạt động
