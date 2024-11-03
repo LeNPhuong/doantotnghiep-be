@@ -47,8 +47,6 @@ class CommentController extends BaseController
         // Trả về phản hồi thành công
         return $this->sendResponse($comment, 'Bình luận thành công.'); // 201 Created
     }
-
-
     public function toggleLike($commentId)
     {
         try {

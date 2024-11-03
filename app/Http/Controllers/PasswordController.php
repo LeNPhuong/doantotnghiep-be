@@ -231,6 +231,47 @@ class PasswordController extends BaseController
 
         return $this->sendResponse('Password has been reset successfully', 200);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/change-password",
+     *     summary="Thay đổi mật khẩu",
+     *     description="API để thay đổi mật khẩu của người dùng.",
+     *     tags={"auth"},
+     *     security={{"bearer":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="password", type="string", example="NewPassword@123", description="Mật khẩu mới (ít nhất 6 ký tự, gồm chữ cái, số và ký tự đặc biệt)"),
+     *             @OA\Property(property="c_password", type="string", example="NewPassword@123", description="Xác nhận mật khẩu mới")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Đổi mật khẩu thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Đổi mật khẩu thành công"),
+     *             @OA\Property(property="status_code", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Lỗi định dạng",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Lỗi định dạng"),
+     *             @OA\Property(property="errors", type="object", example={"password": {"Password phải có ít nhất một ký tự đặc biệt"}})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Mật khẩu mới phải khác với mật khẩu hiện tại",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Mật khẩu mới phải khác với mật khẩu hiện tại")
+     *         )
+     *     )
+     * )
+     */
     public function changePassword(Request $request)
     {
         // Xác thực dữ liệu đầu vào

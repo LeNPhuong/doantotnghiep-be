@@ -1714,6 +1714,105 @@
                 }
             }
         },
+        "/api/auth/change-password": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Thay đổi mật khẩu",
+                "description": "API để thay đổi mật khẩu của người dùng.",
+                "operationId": "14b7332e48da61a64557794773617021",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "password": {
+                                        "description": "Mật khẩu mới (ít nhất 6 ký tự, gồm chữ cái, số và ký tự đặc biệt)",
+                                        "type": "string",
+                                        "example": "NewPassword@123"
+                                    },
+                                    "c_password": {
+                                        "description": "Xác nhận mật khẩu mới",
+                                        "type": "string",
+                                        "example": "NewPassword@123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đổi mật khẩu thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đổi mật khẩu thành công"
+                                        },
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "password": [
+                                                    "Password phải có ít nhất một ký tự đặc biệt"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Mật khẩu mới phải khác với mật khẩu hiện tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Mật khẩu mới phải khác với mật khẩu hiện tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/auth/profile": {
             "get": {
                 "tags": [
