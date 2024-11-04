@@ -33,7 +33,7 @@ class Category extends Model
 
     public function units()
     {
-        return $this->belongsToMany(Unit::class, 'category_unit', 'category_id', 'unit_id');
+        return $this->belongsToMany(category_unit::class, 'category_unit', 'category_id', 'unit_id');
     }
 
     protected static function boot()

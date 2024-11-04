@@ -12,6 +12,8 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminStatusController;
+use App\Http\Controllers\Admin\AdminUnitsController;
 use App\Http\Controllers\PasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -114,6 +116,7 @@ Route::post('/test', [PaymentController::class, 'test']);
 
 
 Route::middleware(['auth:api', 'admin'])->group(function () {
+
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
 
     // List sản phẩm
@@ -146,7 +149,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/category/{id}',[AdminCategoryController::class, 'show']);
 
     // Cập nhật danh mục sản phẩm
-    Route::get('admin/category/{id}/update',[AdminCategoryController::class, 'edit']);
+    Route::get('admin/category/{id}/edit',[AdminCategoryController::class, 'edit']);
     Route::put('admin/category/{id}/update', [AdminCategoryController::class, 'update']);
     
     // Tìm kiếm danh mục 
@@ -160,13 +163,31 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/users',[AdminUserController::class, 'index']);
     Route::get('admin/user/search',[AdminUserController::class, 'search']);
     Route::get('admin/user/{id}',[AdminUserController::class, 'show']);
-    Route::get('admin/user/{id}/update',[AdminUserController::class, 'edit']);
+    Route::get('admin/user/{id}/edit', [AdminUserController::class, 'edit']);
     Route::put('admin/user/{id}/update',[AdminUserController::class, 'update']);
     Route::delete('admin/user/{id}/delete',[AdminUserController::class, 'softDelete']);
     Route::post('admin/user/{id}/restore',[AdminUserController::class, 'restore']);
     Route::post('admin/user/create',[AdminUserController::class, 'create']);
 
+    // Quản lý đơn vị 
+    Route::get('admin/units',[AdminUnitsController::class, 'index']);
+    Route::get('admin/units/search',[AdminUnitsController::class, 'search']);
+    Route::get('admin/units/edit/{id}',[AdminUnitsController::class, 'edit']);
+    Route::put('admin/units/update/{id}',[AdminUnitsController::class, 'update']);
+    Route::delete('admin/units/delete/{id}',[AdminUnitsController::class, 'delete']);
+    Route::post('admin/units/restore/{id}',[AdminUnitsController::class, 'restore']);
+    Route::post('admin/units/create',[AdminUnitsController::class, 'create']);
 
+    // Quản lý Status
+    Route::get('admin/status',[AdminStatusController::class, 'index']);
+    Route::get('admin/status/search',[AdminStatusController::class, 'search']);
+    Route::get('admin/status/edit/{id}',[AdminStatusController::class, 'edit']);
+    Route::put('admin/status/update/{id}',[AdminStatusController::class, 'update']);
+    Route::delete('admin/status/delete/{id}',[AdminStatusController::class, 'delete']);
+    Route::post('admin/status/restore/{id}',[AdminStatusController::class, 'restore']);
+    Route::post('admin/status/create',[AdminStatusController::class, 'create']);
+
+    
 });
 
 

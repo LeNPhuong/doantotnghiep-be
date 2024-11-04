@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -14,7 +15,7 @@ class AdminCategoryController extends BaseController
     {
         try {
             $category = Category::all();
-            if($category->isEmpty()) {
+            if ($category->isEmpty()) {
                 return $this->sendResponse($category, 'Chưa có danh mục sản phẩm');
             }
             return $this->sendResponse($category, 'Lấy danh mục thành công');
@@ -26,7 +27,7 @@ class AdminCategoryController extends BaseController
     public function show($id)
     {
         try {
-            $category = Category::find($id);
+            $category = Category::with('units')->findOrFail($id);
             return $this->sendResponse($category, 'Lấy danh mục thành công');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy danh mục', ['error' => $th->getMessage()], 404);
@@ -35,7 +36,7 @@ class AdminCategoryController extends BaseController
     public function edit($id)
     {
         try {
-            $category = Category::find($id);
+            $category = Category::with('units')->findOrFail($id);
             return $this->sendResponse($category, 'Lấy danh mục thành công');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy danh mục', ['error' => $th->getMessage()], 404);
@@ -44,28 +45,55 @@ class AdminCategoryController extends BaseController
     public function update(Request $request, $id)
     {
         try {
-            $category =  Category::find($id);
+            // Tìm category cùng với các đơn vị liên kết từ bảng category_unit
+            $category = Category::with('units')->findOrFail($id);
 
+            // Xác thực dữ liệu từ request
             $validatedData = $request->validate([
                 'name' => 'nullable|string|max:191',
                 'key' => 'nullable|string|max:191',
-                'active' => 'tinyint',
+                'active' => 'boolean',
+                'units' => 'array',
+                'units.*.unit_id' => 'exists:units,id', 
             ]);
 
-            // Loại bỏ các trường không có trong request để giữ nguyên giá trị cũ
+            // Lọc ra những dữ liệu cần cập nhật của category
             $dataToUpdate = array_filter($validatedData, fn($value) => !is_null($value));
 
+            // Cập nhật thông tin của category
             $category->update($dataToUpdate);
 
-            return $this->sendResponse($category, 'Cập nhật danh mục thành công');
-        } catch (\Exception $th) {
-            return $this->sendError('Không tìm thấy danh mục.', ['error' => $th->getMessage()], 404);
+            // Cập nhật hoặc thêm mới unit_id trong bảng category_unit nếu có danh sách đơn vị mới
+            if (isset($validatedData['units'])) {
+                // Lấy danh sách unit_id hiện tại
+                $currentUnitIds = $category->units->pluck('id')->toArray();
+
+                // Tạo mảng để lưu các unit_id mới
+                $newUnitIds = array_column($validatedData['units'], 'unit_id');
+
+                // Xóa các unit_id không còn trong danh sách mới
+                foreach (array_diff($currentUnitIds, $newUnitIds) as $unitId) {
+                    $category->units()->detach($unitId);
+                }
+
+                // Thêm mới các unit_id chưa có trong danh sách hiện tại
+                foreach (array_diff($newUnitIds, $currentUnitIds) as $unitId) {
+                    $category->units()->attach($unitId);
+                }
+            }
+
+            return $this->sendResponse($category->load('units'), 'Cập nhật danh mục thành công');
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError('Không tìm thấy danh mục.', ['error' => $e->getMessage()], 404);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->validator->errors()], 422);
         } catch (\Exception $th) {
             return $this->sendError('Có lỗi xảy ra. Vui lòng thử lại sau.', ['error' => $th->getMessage()], 500);
         }
     }
+
+
+
 
     public function search(Request $request)
     {

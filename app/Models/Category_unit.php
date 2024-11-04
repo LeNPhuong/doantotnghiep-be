@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
-class Unit extends Model
+class category_unit extends Model
 {
     use HasFactory, SoftDeletes, Searchable;
 
-    protected $table = 'units';
+    protected $table = 'category_unit';
 
     protected $fillable = [
-        'name', 'active'
+        'category_id', 'unit_id'
     ];
 
     public function toSearchableArray()
