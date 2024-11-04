@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('comment_id');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
-
+            $table->softDeletes();
             // Đảm bảo một người dùng chỉ có thể like một bình luận một lần
             $table->unique(['comment_id', 'user_id']);
         });

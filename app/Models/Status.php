@@ -11,7 +11,7 @@ class Status extends Model
     protected $table = 'status';
 
     protected $fillable = [
-        'text_status', // Hoặc các trường khác nếu có
+        'text_status', 'active'
     ];
 
     // Định nghĩa mối quan hệ với bảng Order

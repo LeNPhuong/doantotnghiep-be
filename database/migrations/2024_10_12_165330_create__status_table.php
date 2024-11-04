@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('status', function (Blueprint $table) {
             $table->id();   
             $table->string('text_status',255);
+            $table->boolean('active')->default(1);
+            $table->softDeletes();
         });
     }
 

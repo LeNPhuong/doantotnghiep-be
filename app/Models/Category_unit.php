@@ -7,16 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
-
-
-class Category extends Model
+class category_unit extends Model
 {
     use HasFactory, SoftDeletes, Searchable;
 
-    protected $table = 'categories';
+    protected $table = 'category_unit';
 
     protected $fillable = [
-        'name', 'key', 'active'
+        'category_id', 'unit_id'
     ];
 
     public function toSearchableArray()
@@ -26,14 +24,10 @@ class Category extends Model
             'name' => $this->name
         ];
     }
-    public function products()
-    {
-        return $this->hasMany(Product::class, 'cate_id');
-    }
 
-    public function units()
+    public function categories()
     {
-        return $this->belongsToMany(category_unit::class, 'category_unit', 'category_id', 'unit_id');
+        return $this->belongsToMany(Category::class, 'category_unit', 'unit_id', 'category_id');
     }
 
     protected static function boot()
@@ -42,7 +36,7 @@ class Category extends Model
 
         static::retrieved(function ($unit) {
             // Ẩn trường pivot khi lấy dữ liệu
-            $unit->makeHidden(['active','created_at', 'updated_at']);
+            $unit->makeHidden(['pivot','created_at', 'updated_at']);
         });
     }
 }
