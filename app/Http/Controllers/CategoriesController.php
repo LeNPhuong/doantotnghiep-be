@@ -22,7 +22,6 @@ class CategoriesController extends BaseController
     public function getProductsByCategory($categoryId)
     {
         $category = Category::find($categoryId);
-
         if (!$category) {
             return $this->sendError('Danh mục không tồn tại để tìm thấy sản phẩm!');
         }
@@ -38,7 +37,6 @@ class CategoriesController extends BaseController
             ->where('cate_id', $categoryId) // Lọc theo category ID mong muốn
             ->select('id', 'cate_id', 'name', 'price', 'sale', 'img', 'quantity', 'description', 'made', 'active')
             ->get();
-
         if (!$products) {
             return $this->sendError('Danh mục không tồn tại để tìm thấy sản phẩm!');
         }

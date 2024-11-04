@@ -14,7 +14,7 @@ class Unit extends Model
     protected $table = 'units';
 
     protected $fillable = [
-        'category_id', 'unit_id'
+        'name', 'active'
     ];
 
     public function toSearchableArray()
