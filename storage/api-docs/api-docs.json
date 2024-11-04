@@ -2320,6 +2320,486 @@
                 ]
             }
         },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Lấy danh sách tất cả sản phẩm",
+                "description": "API này cho phép lấy danh sách tất cả sản phẩm đang hoạt động, kèm theo thông tin danh mục và đơn vị.",
+                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách sản phẩm thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "cate_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Sản phẩm A"
+                                                    },
+                                                    "price": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 100000
+                                                    },
+                                                    "sale": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 90000
+                                                    },
+                                                    "img": {
+                                                        "type": "string",
+                                                        "example": "image_url.jpg"
+                                                    },
+                                                    "quantity": {
+                                                        "type": "integer",
+                                                        "example": 50
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Mô tả sản phẩm"
+                                                    },
+                                                    "made": {
+                                                        "type": "string",
+                                                        "example": "Việt Nam"
+                                                    },
+                                                    "active": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "category": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Danh mục B"
+                                                            },
+                                                            "active": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "units": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string",
+                                                                            "example": "Đơn vị C"
+                                                                        },
+                                                                        "active": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy sản phẩm thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy sản phẩm",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lỗi không tìm thấy sản phẩm"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Lấy chi tiết sản phẩm",
+                "description": "API này lấy thông tin chi tiết của một sản phẩm, bao gồm danh mục, đơn vị và bình luận của sản phẩm.",
+                "operationId": "7ab21ddb713501f3d4c2914892c02a21",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của sản phẩm cần lấy chi tiết",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lấy chi tiết sản phẩm thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cate_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Sản phẩm A"
+                                                },
+                                                "price": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100000
+                                                },
+                                                "sale": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 90000
+                                                },
+                                                "img": {
+                                                    "type": "string",
+                                                    "example": "image_url.jpg"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Mô tả sản phẩm"
+                                                },
+                                                "made": {
+                                                    "type": "string",
+                                                    "example": "Việt Nam"
+                                                },
+                                                "active": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "category": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Danh mục B"
+                                                        },
+                                                        "active": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "units": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Đơn vị C"
+                                                                    },
+                                                                    "active": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "comments": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "product_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "user_id": {
+                                                                "type": "integer",
+                                                                "example": 3
+                                                            },
+                                                            "rating": {
+                                                                "type": "integer",
+                                                                "example": 4
+                                                            },
+                                                            "comment": {
+                                                                "type": "string",
+                                                                "example": "Sản phẩm rất tốt"
+                                                            },
+                                                            "likes": {
+                                                                "type": "integer",
+                                                                "example": 10
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2023-01-01T00:00:00Z"
+                                                            },
+                                                            "user": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 3
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Nguyễn Văn A"
+                                                                    },
+                                                                    "email": {
+                                                                        "type": "string",
+                                                                        "example": "nguyenvana@example.com"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy sản phẩm chi tiết thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy sản phẩm",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sản phẩm không tồn tại"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": {
+                                                "error": "Sản phẩm không tồn tại"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/search": {
+            "post": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Tìm kiếm sản phẩm",
+                "description": "API này cho phép người dùng tìm kiếm sản phẩm dựa trên từ khóa.",
+                "operationId": "42bad88497a6972707ac7672fd5eb6e3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "query"
+                                ],
+                                "properties": {
+                                    "query": {
+                                        "description": "Từ khóa tìm kiếm",
+                                        "type": "string",
+                                        "example": "sản phẩm A"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tìm kiếm sản phẩm thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "cate_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Sản phẩm A"
+                                                    },
+                                                    "price": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 100000
+                                                    },
+                                                    "sale": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 90000
+                                                    },
+                                                    "img": {
+                                                        "type": "string",
+                                                        "example": "image_url.jpg"
+                                                    },
+                                                    "quantity": {
+                                                        "type": "integer",
+                                                        "example": 50
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Mô tả sản phẩm"
+                                                    },
+                                                    "made": {
+                                                        "type": "string",
+                                                        "example": "Việt Nam"
+                                                    },
+                                                    "active": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tìm kiếm sản phẩm thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng đầu vào",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "query": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Trường này là bắt buộc."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/profile": {
             "get": {
                 "tags": [
@@ -2581,6 +3061,10 @@
         {
             "name": "forget password",
             "description": "forget password"
+        },
+        {
+            "name": "product",
+            "description": "product"
         }
     ]
 }
