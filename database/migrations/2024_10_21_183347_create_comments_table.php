@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('comment'); // Nội dung bình luận
             $table->unsignedInteger('likes')->default(0); // Số lượt thích
             $table->timestamps(); // Tạo trường create_at và update_at tự động
+            $table->softDeletes();
         });
     }
 

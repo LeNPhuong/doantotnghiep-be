@@ -46,7 +46,7 @@ class AdminCategoryController extends BaseController
     {
         try {
             // Tìm category cùng với các đơn vị liên kết từ bảng category_unit
-            $category = Category::with('units')->findOrFail($id);
+            $category = Category::with('units')->find($id);
 
             // Xác thực dữ liệu từ request
             $validatedData = $request->validate([
@@ -108,10 +108,10 @@ class AdminCategoryController extends BaseController
         }
     }
 
-    public function softDelete($id)
+    public function delete($id)
     {
         try {
-            $category = Category::findOrFail($id);
+            $category = Category::find($id);
 
             $category->delete();
 
@@ -124,7 +124,7 @@ class AdminCategoryController extends BaseController
     public function restore($id)
     {
         try {
-            $category = Category::onlyTrashed()->findOrFail($id);
+            $category = Category::onlyTrashed()->find($id);
             $category->restore();
 
             return $this->sendResponse($category, 'Danh mục đã được khôi phục thành công.');

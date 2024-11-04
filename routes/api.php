@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminCommentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CommentController;
@@ -186,7 +187,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::delete('admin/status/delete/{id}',[AdminStatusController::class, 'delete']);
     Route::post('admin/status/restore/{id}',[AdminStatusController::class, 'restore']);
     Route::post('admin/status/create',[AdminStatusController::class, 'create']);
-
+    
+    // Quản lý comment
+    Route::get('admin/comments/{id}',[AdminCommentController::class, 'index']);
+    Route::delete('admin/comments/delete/{id}',[AdminCommentController::class, 'delete']);
+    Route::post('admin/comments/restore/{id}',[AdminCommentController::class, 'restore']);
     
 });
 

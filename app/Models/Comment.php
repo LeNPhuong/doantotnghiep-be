@@ -4,12 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 class Comment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $fillable = ['product_id', 'user_id', 'rating', 'comment', 'likes'];
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'comment' => $this->name
+        ];
+    }
 
     public function product()
     {
