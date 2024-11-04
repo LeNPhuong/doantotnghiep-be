@@ -72,7 +72,7 @@ Route::group([
     //Lấy tất cả sản phẩm
     Route::get('/', [ProductController::class, 'index']);
     //Tìm kiếm sản phẩm theo tên
-    Route::get('/search', [ProductController::class, 'search']);
+    Route::post('/search', [ProductController::class, 'search']);
     //Lấy thông tin chi tiết của 1 sản phẩm
     Route::get('/{id}', [ProductController::class, 'show']);
     //tạo ra comment cho từng sản phẩm
