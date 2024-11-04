@@ -2320,6 +2320,224 @@
                 ]
             }
         },
+        "/api/payment": {
+            "post": {
+                "tags": [
+                    "payment"
+                ],
+                "summary": "Xử lý thanh toán cho đơn hàng",
+                "description": "Phương thức này cho phép người dùng xử lý thanh toán cho đơn hàng đang chờ thanh toán. Người dùng có thể chọn phương thức thanh toán và sử dụng voucher nếu có. Nếu thanh toán thành công, thông tin giao dịch sẽ được lưu trữ.",
+                "operationId": "0903f86e0c26c59b0356c869776e43da",
+                "requestBody": {
+                    "description": "Thông tin cần thiết để xử lý thanh toán",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "payment_method"
+                                ],
+                                "properties": {
+                                    "payment_method": {
+                                        "description": "Phương thức thanh toán: ví dụ như momo, COD (thanh toán khi nhận hàng), hoặc các phương thức khác.",
+                                        "type": "string",
+                                        "example": "momo"
+                                    },
+                                    "voucher_id": {
+                                        "description": "ID của voucher (nếu có) để áp dụng chiết khấu.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "note": {
+                                        "description": "Ghi chú tùy chọn từ người dùng cho giao dịch này.",
+                                        "type": "string",
+                                        "example": "Ghi chú thanh toán"
+                                    },
+                                    "name": {
+                                        "description": "Tên của người nhận hàng.",
+                                        "type": "string",
+                                        "example": "Nguyễn Văn A"
+                                    },
+                                    "phone": {
+                                        "description": "Số điện thoại liên hệ của người nhận hàng.",
+                                        "type": "string",
+                                        "example": "0901234567"
+                                    },
+                                    "email": {
+                                        "description": "Địa chỉ email của người nhận hàng.",
+                                        "type": "string",
+                                        "example": "email@example.com"
+                                    },
+                                    "address": {
+                                        "description": "Địa chỉ giao hàng của người nhận.",
+                                        "type": "string",
+                                        "example": "123 Đường ABC, Quận 1, TP. HCM"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Thanh toán thành công.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Thanh toán thành công."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID của giao dịch.",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "user_id": {
+                                                    "description": "ID của người dùng.",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "order_id": {
+                                                    "description": "ID của đơn hàng.",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "total_price": {
+                                                    "description": "Tổng giá trị của giao dịch.",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 150000
+                                                },
+                                                "note": {
+                                                    "description": "Ghi chú từ người dùng.",
+                                                    "type": "string",
+                                                    "example": "Ghi chú thanh toán"
+                                                },
+                                                "name": {
+                                                    "description": "Tên của người nhận hàng.",
+                                                    "type": "string",
+                                                    "example": "Nguyễn Văn A"
+                                                },
+                                                "phone": {
+                                                    "description": "Số điện thoại liên hệ.",
+                                                    "type": "string",
+                                                    "example": "0901234567"
+                                                },
+                                                "email": {
+                                                    "description": "Địa chỉ email.",
+                                                    "type": "string",
+                                                    "example": "email@example.com"
+                                                },
+                                                "address": {
+                                                    "description": "Địa chỉ giao hàng.",
+                                                    "type": "string",
+                                                    "example": "123 Đường ABC, Quận 1, TP. HCM"
+                                                },
+                                                "payment_method": {
+                                                    "description": "Phương thức thanh toán được sử dụng.",
+                                                    "type": "string",
+                                                    "example": "momo"
+                                                },
+                                                "created_at": {
+                                                    "description": "Thời gian tạo giao dịch.",
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-04T12:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Thời gian cập nhật giao dịch.",
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-04T12:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng hoặc voucher không hợp lệ.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Voucher không hợp lệ hoặc đã hết hạn!"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không có đơn hàng nào đang chờ thanh toán.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không có đơn hàng nào đang chờ thanh toán."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi xảy ra trong quá trình thanh toán.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Thanh toán thất bại. Vui lòng thử lại."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Lỗi chi tiết"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -3301,6 +3519,10 @@
         {
             "name": "forget password",
             "description": "forget password"
+        },
+        {
+            "name": "payment",
+            "description": "payment"
         },
         {
             "name": "product",
