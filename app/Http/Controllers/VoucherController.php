@@ -11,6 +11,52 @@ use Illuminate\Support\Facades\Validator;
 
 class VoucherController extends BaseController
 {
+    /**
+     * @OA\Get(
+     *     path="/api/products/vouchers",
+     *     summary="Lấy danh sách voucher hợp lệ",
+     *     tags={"product"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy danh sách voucher thành công!",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="code", type="string", example="DISCOUNT10"),
+     *                 @OA\Property(property="active", type="boolean", example=true),
+     *                 @OA\Property(property="discount_type", type="string", example="percentage"),
+     *                 @OA\Property(property="discount_value", type="number", example=10.5),
+     *                 @OA\Property(property="max_discount_value", type="number", example=50),
+     *                 @OA\Property(property="description", type="string", example="Giảm giá 10% cho đơn hàng."),
+     *                 @OA\Property(property="quantity", type="integer", example=100),
+     *                 @OA\Property(property="start_date", type="string", format="date-time", example="2024-11-01T00:00:00Z"),
+     *                 @OA\Property(property="end_date", type="string", format="date-time", example="2024-11-30T23:59:59Z"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-01T00:00:00Z"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-01T00:00:00Z")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Danh sách vouchers trống",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Danh sách vouchers trống"),
+     *             @OA\Property(property="data", type="string", example=""),
+     *             @OA\Property(property="code", type="integer", example=400)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Lỗi xảy ra",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Đã có lỗi xảy ra."),
+     *             @OA\Property(property="error", type="string", example="Lỗi chi tiết")
+     *         )
+     *     )
+     * )
+     */
     public function getVoucher()
     {
         try {
@@ -33,6 +79,54 @@ class VoucherController extends BaseController
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/products/vouchers/store-user",
+     *     summary="Lưu voucher cho người dùng",
+     *     tags={"product"},
+     *     security={{"bearer": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"voucher_id"},
+     *             @OA\Property(property="voucher_id", type="integer", example=1, description="ID của voucher cần lưu")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Voucher đã được lưu thành công cho người dùng.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Voucher đã được lưu thành công cho người dùng."),
+     *             @OA\Property(property="data", type="null")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Lỗi định dạng hoặc voucher không hợp lệ.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Lỗi định dạng"),
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="code", type="integer", example=400)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Voucher không tồn tại hoặc không tìm thấy.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Có lỗi xảy ra khi lưu voucher."),
+     *             @OA\Property(property="error", type="string", example="Lỗi chi tiết")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi xảy ra trong quá trình lưu voucher.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Có lỗi xảy ra khi lưu voucher."),
+     *             @OA\Property(property="error", type="string", example="Lỗi chi tiết")
+     *         )
+     *     )
+     * )
+     */
     public function storeUserVoucher(Request $request)
     {
 

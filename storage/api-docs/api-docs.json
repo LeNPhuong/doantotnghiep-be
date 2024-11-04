@@ -3033,6 +3033,246 @@
                     }
                 ]
             }
+        },
+        "/api/products/vouchers": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Lấy danh sách voucher hợp lệ",
+                "operationId": "4a8b47672dc345cc3dc72292c1c72a54",
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách voucher thành công!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "code": {
+                                                "type": "string",
+                                                "example": "DISCOUNT10"
+                                            },
+                                            "active": {
+                                                "type": "boolean",
+                                                "example": true
+                                            },
+                                            "discount_type": {
+                                                "type": "string",
+                                                "example": "percentage"
+                                            },
+                                            "discount_value": {
+                                                "type": "number",
+                                                "example": 10.5
+                                            },
+                                            "max_discount_value": {
+                                                "type": "number",
+                                                "example": 50
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Giảm giá 10% cho đơn hàng."
+                                            },
+                                            "quantity": {
+                                                "type": "integer",
+                                                "example": 100
+                                            },
+                                            "start_date": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-11-01T00:00:00Z"
+                                            },
+                                            "end_date": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-11-30T23:59:59Z"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-11-01T00:00:00Z"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-11-01T00:00:00Z"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Danh sách vouchers trống",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Danh sách vouchers trống"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Lỗi xảy ra",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã có lỗi xảy ra."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Lỗi chi tiết"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/vouchers/store-user": {
+            "post": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Lưu voucher cho người dùng",
+                "operationId": "73bccba6a76eda67840d8f7c0f141a3e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "voucher_id"
+                                ],
+                                "properties": {
+                                    "voucher_id": {
+                                        "description": "ID của voucher cần lưu",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Voucher đã được lưu thành công cho người dùng.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Voucher đã được lưu thành công cho người dùng."
+                                        },
+                                        "data": {
+                                            "type": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng hoặc voucher không hợp lệ.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Voucher không tồn tại hoặc không tìm thấy.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra khi lưu voucher."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Lỗi chi tiết"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi xảy ra trong quá trình lưu voucher.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra khi lưu voucher."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Lỗi chi tiết"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
         }
     },
     "components": {
