@@ -41,7 +41,7 @@ class ProductController extends BaseController
      *                         @OA\Property(property="name", type="string", example="Danh mục B"),
      *                         @OA\Property(property="active", type="integer", example=1),
      *                         @OA\Property(
-     *                             property="units",
+     *                             property="active_units",
      *                             type="array",
      *                             @OA\Items(
      *                                 @OA\Property(property="id", type="integer", example=1),
@@ -75,9 +75,8 @@ class ProductController extends BaseController
             return Product::with([
                 'category' => function ($query) {
                     $query->where('active', 1); // Lấy danh mục có active = 1
-                }, 'category.units' => function ($query) {
-                    $query->where('active', 1); // Lấy đơn vị có active = 1
-                }
+                },
+                'category.activeUnits' // Sử dụng quan hệ `activeUnits` đã khai báo với điều kiện `active = 1`
             ])
                 ->select('id', 'cate_id', 'name', 'price', 'sale', 'img', 'quantity', 'description', 'made', 'active')
                 ->get();
@@ -124,7 +123,7 @@ class ProductController extends BaseController
      *                     @OA\Property(property="name", type="string", example="Danh mục B"),
      *                     @OA\Property(property="active", type="integer", example=1),
      *                     @OA\Property(
-     *                         property="units",
+     *                         property="active_units",
      *                         type="array",
      *                         @OA\Items(
      *                             type="object",
@@ -178,13 +177,12 @@ class ProductController extends BaseController
             return Product::with([
                 'category' => function ($query) {
                     $query->where('active', 1); // Lấy danh mục có active = 1
-                }, 'category.units' => function ($query) {
-                    $query->where('active', 1); // Lấy đơn vị có active = 1
                 }, 'comments' => function ($query) {
                     $query->select('id', 'product_id', 'user_id', 'rating', 'comment', 'likes', 'created_at') // Chọn các trường từ bảng comments
                         ->where('product_id', '!=', null) // Chỉ lấy các bình luận của sản phẩm
                         ->with(['user:id,name,email']); // Eager load thông tin user (chỉ lấy id, name, email)
-                }
+                },
+                'category.activeUnits' // Sử dụng quan hệ `activeUnits` đã khai báo với điều kiện `active = 1`
             ])
                 ->select('id', 'cate_id', 'name', 'price', 'sale', 'img', 'quantity', 'description', 'made', 'active')
                 ->find($id); // Tìm sản phẩm theo ID

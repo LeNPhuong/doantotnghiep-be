@@ -84,7 +84,7 @@ class CategoriesController extends BaseController
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="name", type="string", example="Danh mục A"),
      *                     @OA\Property(
-     *                         property="units",
+     *                         property="active_units",
      *                         type="array",
      *                         @OA\Items(
      *                             type="object",
@@ -117,9 +117,7 @@ class CategoriesController extends BaseController
             'category' => function ($query) {
                 $query->where('active', 1); // Lấy danh mục có active = 1
             },
-            'category.units' => function ($query) {
-                $query->where('active', 1); // Lấy đơn vị có active = 1
-            }
+            'category.activeUnits' // Sử dụng quan hệ `activeUnits` đã khai báo với điều kiện `active = 1`
         ])
             ->where('cate_id', $categoryId) // Lọc theo category ID mong muốn
             ->select('id', 'cate_id', 'name', 'price', 'sale', 'img', 'quantity', 'description', 'made', 'active')

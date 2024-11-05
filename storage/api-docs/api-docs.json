@@ -639,12 +639,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
+                }
             }
         },
         "/api/auth/logout": {
@@ -2617,7 +2612,7 @@
                                                                 "type": "integer",
                                                                 "example": 1
                                                             },
-                                                            "units": {
+                                                            "active_units": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "properties": {
@@ -2765,7 +2760,7 @@
                                                             "type": "integer",
                                                             "example": 1
                                                         },
-                                                        "units": {
+                                                        "active_units": {
                                                             "type": "array",
                                                             "items": {
                                                                 "properties": {
