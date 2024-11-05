@@ -31,7 +31,7 @@ Route::group([
     //Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
     //Làm mới token
-    Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
+    Route::post('/refresh', [AuthController::class, 'refresh']);
     
     //Đơn hàng
     //Lấy chi tiết đơn hàng

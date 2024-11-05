@@ -202,7 +202,7 @@ class OrderController extends BaseController
         // Xác thực dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
             'cart' => 'required|array',
-            'cart.*.id' => 'required|integer|exists:products,id', // Kiểm tra từng sản phẩm trong giỏ hàng
+            'cart.*.id' => 'required|integer|exists:product,id', // Kiểm tra từng sản phẩm trong giỏ hàng
             'cart.*.quantity' => 'required|integer|min:1', // Kiểm tra số lượng sản phẩm
             'cart.*.unit' => 'required|string|exists:units,id', // Kiểm tra đơn vị sản phẩm
             'voucher_id' => 'nullable|integer|exists:vouchers,id', // Kiểm tra voucher nếu có

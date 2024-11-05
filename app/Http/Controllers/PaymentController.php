@@ -8,11 +8,96 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends BaseController
 {
+    /**
+     * @OA\Post(
+     *     path="/api/payment",
+     *     summary="Xử lý thanh toán cho đơn hàng",
+     *     description="Phương thức này cho phép người dùng xử lý thanh toán cho đơn hàng đang chờ thanh toán. Người dùng có thể chọn phương thức thanh toán và sử dụng voucher nếu có. Nếu thanh toán thành công, thông tin giao dịch sẽ được lưu trữ.",
+     *     tags={"payment"},
+     *     security={{"bearer": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Thông tin cần thiết để xử lý thanh toán",
+     *         @OA\JsonContent(
+     *             required={"payment_method"},
+     *             @OA\Property(property="payment_method", type="string", example="momo", description="Phương thức thanh toán: ví dụ như momo, COD (thanh toán khi nhận hàng), hoặc các phương thức khác."),
+     *             @OA\Property(property="voucher_id", type="integer", example=1, description="ID của voucher (nếu có) để áp dụng chiết khấu."),
+     *             @OA\Property(property="note", type="string", example="Ghi chú thanh toán", description="Ghi chú tùy chọn từ người dùng cho giao dịch này."),
+     *             @OA\Property(property="name", type="string", example="Nguyễn Văn A", description="Tên của người nhận hàng."),
+     *             @OA\Property(property="phone", type="string", example="0901234567", description="Số điện thoại liên hệ của người nhận hàng."),
+     *             @OA\Property(property="email", type="string", example="email@example.com", description="Địa chỉ email của người nhận hàng."),
+     *             @OA\Property(property="address", type="string", example="123 Đường ABC, Quận 1, TP. HCM", description="Địa chỉ giao hàng của người nhận.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Thanh toán thành công.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Thanh toán thành công."),
+     *             @OA\Property(property="data", type="object", 
+     *                 @OA\Property(property="id", type="integer", example=1, description="ID của giao dịch."),
+     *                 @OA\Property(property="user_id", type="integer", example=1, description="ID của người dùng."),
+     *                 @OA\Property(property="order_id", type="integer", example=1, description="ID của đơn hàng."),
+     *                 @OA\Property(property="total_price", type="number", format="float", example=150000, description="Tổng giá trị của giao dịch."),
+     *                 @OA\Property(property="note", type="string", example="Ghi chú thanh toán", description="Ghi chú từ người dùng."),
+     *                 @OA\Property(property="name", type="string", example="Nguyễn Văn A", description="Tên của người nhận hàng."),
+     *                 @OA\Property(property="phone", type="string", example="0901234567", description="Số điện thoại liên hệ."),
+     *                 @OA\Property(property="email", type="string", example="email@example.com", description="Địa chỉ email."),
+     *                 @OA\Property(property="address", type="string", example="123 Đường ABC, Quận 1, TP. HCM", description="Địa chỉ giao hàng."),
+     *                 @OA\Property(property="payment_method", type="string", example="momo", description="Phương thức thanh toán được sử dụng."),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-04T12:00:00Z", description="Thời gian tạo giao dịch."),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-04T12:00:00Z", description="Thời gian cập nhật giao dịch.")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Lỗi định dạng hoặc voucher không hợp lệ.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Voucher không hợp lệ hoặc đã hết hạn!"),
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="code", type="integer", example=400)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Không có đơn hàng nào đang chờ thanh toán.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Không có đơn hàng nào đang chờ thanh toán."),
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="code", type="integer", example=404)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi xảy ra trong quá trình thanh toán.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Thanh toán thất bại. Vui lòng thử lại."),
+     *             @OA\Property(property="error", type="string", example="Lỗi chi tiết")
+     *         )
+     *     )
+     * )
+     */
     public function processPayment(Request $request)
     {
+        // Xác thực dữ liệu đầu vào
+        $validator = Validator::make($request->all(), [
+            'payment_method' => 'required|string|in:momo,cod', // Kiểm tra phương thức thanh toán
+            'voucher_id' => 'nullable|exists:vouchers,id', // Kiểm tra voucher nếu có
+            'name' => 'required|string|max:255', // Kiểm tra tên
+            'phone' => 'required|string|max:15', // Kiểm tra số điện thoại
+            'email' => 'required|email|max:255', // Kiểm tra email
+            'address' => 'required|string|max:255', // Kiểm tra địa chỉ
+            'note' => 'nullable|string|max:255', // Kiểm tra ghi chú
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Lỗi định dạng', $validator->errors(), 400);
+        }
         // Lấy ID của người dùng hiện tại
         $userId = auth()->user()->id;
         // Lấy thông tin đơn hàng sau khi checkout
@@ -64,7 +149,7 @@ class PaymentController extends BaseController
 
             // Gọi hàm xử lý thanh toán, ví dụ processCreditCardPayment()
             if ($this->handlePayment($order, $amount, $userId, $request->all(), $paymentMethod)) {
-                return $this->handlePayment($order, $amount, $userId, $request->all(),$paymentMethod);
+                return $this->handlePayment($order, $amount, $userId, $request->all(), $paymentMethod);
             }
             // Lưu thông tin transaction
             $transaction = Transaction::create([
@@ -91,7 +176,7 @@ class PaymentController extends BaseController
     }
 
     // Hàm xử lý thanh toán
-    protected function handlePayment($order, $amount, $userId, $data,$paymentMethod)
+    protected function handlePayment($order, $amount, $userId, $data, $paymentMethod)
     {
         // Tùy theo phương thức thanh toán, bạn có thể gọi các API tương ứng
         if ($paymentMethod == 'momo') {
@@ -170,6 +255,7 @@ class PaymentController extends BaseController
 
     public function test(Request $request)
     {
+        Log::info('Function test called');
         Log::info($request->all());
 
         // Lấy dữ liệu trả về từ MoMo
