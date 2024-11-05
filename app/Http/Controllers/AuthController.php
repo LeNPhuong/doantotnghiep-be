@@ -157,7 +157,6 @@ class AuthController extends BaseController
      *     tags={"auth"},
      *     summary="Làm mới token",
      *     description="Phương thức này cho phép người dùng làm mới token JWT để nhận thông tin tài khoản mới.",
-     *     security={{"bearer": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="Refresh token thành công.",
