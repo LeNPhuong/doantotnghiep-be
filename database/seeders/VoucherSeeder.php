@@ -23,7 +23,7 @@ class VoucherSeeder extends Seeder
                 'discount_type' => 'percentage',
                 'discount_value' => 10.00,
                 'max_discount_value' => 50.00,
-                'description' => 'Giảm giá 10% cho đơn hàng trên 500.000 VNĐ',
+                'description' => 'Giảm giá 10% cho đơn hàng',
                 'quantity' => 100,
                 'start_date' => $now,
                 'end_date' => $now->copy()->addDays(30),
