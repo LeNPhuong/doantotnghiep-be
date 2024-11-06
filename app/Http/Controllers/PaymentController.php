@@ -124,8 +124,8 @@ class PaymentController extends BaseController
 
                     // Lấy thông tin người dùng và voucher
                     $user = User::with('vouchers')->find($userId);
-                    $voucher = $user->vouchers()->find($voucherId);
-
+                    // $voucher = $user->vouchers()->find($voucherId);
+                    $voucher = $user->vouchers()->where('vouchers.id', $voucherId)->first();
                     // Xác minh tính hợp lệ của voucher
                     if ($voucher && $voucher->active && now()->between($voucher->start_date, $voucher->end_date)) {
                         // Tính toán chiết khấu
@@ -135,8 +135,15 @@ class PaymentController extends BaseController
                         } else {
                             $discount = $voucher->discount_value;
                         }
-                        $discount = min($discount, $voucher->max_discount_value);
-                        $amount -= $discount;
+
+                        if ($voucher->max_discount_value) {
+                            $discount = min($discount, $voucher->max_discount_value); // Không vượt quá giá trị tối đa
+                        }
+                        if ($amount > $discount) {
+                            $amount -= $discount; // Giảm tổng số tiền
+                        } else {
+                            $amount = 0;
+                        }
 
                         // Cập nhật thông tin voucher vào đơn hàng
                         $order->voucher_id = $voucherId;

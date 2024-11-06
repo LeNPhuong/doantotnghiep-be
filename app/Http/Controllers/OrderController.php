@@ -251,16 +251,19 @@ class OrderController extends BaseController
             $totalAmount = array_sum(array_map(function ($item) {
                 return $item['price'] * $item['quantity'];
             }, $cart));
-
             // Áp dụng chiết khấu nếu có voucher hợp lệ
             if ($voucher) {
                 $discount = $voucher->discount_type === 'percentage'
                     ? ($totalAmount * $voucher->discount_value) / 100
                     : $voucher->discount_value;
-
-                $discount = min($discount, $voucher->max_discount_value); // Không vượt quá giá trị tối đa
-                $totalAmount -= $discount; // Giảm tổng số tiền
-
+                if ($voucher->max_discount_value) {
+                    $discount = min($discount, $voucher->max_discount_value); // Không vượt quá giá trị tối đa
+                }
+                if ($totalAmount > $discount) {
+                    $totalAmount -= $discount; // Giảm tổng số tiền
+                } else {
+                    $totalAmount = 0;
+                }
                 // Xóa voucher sau khi sử dụng
                 $user->vouchers()->detach($voucher->id);
             }
