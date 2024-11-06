@@ -338,6 +338,98 @@
                 ]
             }
         },
+        "/api/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "admin/dashboard"
+                ],
+                "summary": "Lấy dữ liệu cho trang dashboard",
+                "description": "Trả về tổng số đơn hàng, tổng doanh thu, số sản phẩm đã bán, thành viên mới trong tuần, sản phẩm hot và doanh thu trong tuần",
+                "operationId": "fc67a6092252922b55a3b7c635893104",
+                "responses": {
+                    "200": {
+                        "description": "Truy xuất dữ liệu dashboard thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_orders": {
+                                            "type": "integer",
+                                            "example": 150
+                                        },
+                                        "total_revenue": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 1250000.5
+                                        },
+                                        "total_products_sold": {
+                                            "type": "integer",
+                                            "example": 300
+                                        },
+                                        "new_members": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "hot_products": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Sản phẩm A"
+                                                    },
+                                                    "price": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 100.5
+                                                    },
+                                                    "quantity_sold": {
+                                                        "type": "integer",
+                                                        "example": 20
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "weekly_revenue": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 250000
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi định dạng.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Chi tiết lỗi..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/auth/register": {
             "post": {
                 "tags": [
@@ -804,7 +896,7 @@
                                                         "type": "string",
                                                         "example": "Danh mục A"
                                                     },
-                                                    "units": {
+                                                    "active_units": {
                                                         "type": "array",
                                                         "items": {
                                                             "properties": {
@@ -3502,6 +3594,10 @@
         {
             "name": "auth",
             "description": "auth"
+        },
+        {
+            "name": "admin/dashboard",
+            "description": "admin/dashboard"
         },
         {
             "name": "category",
