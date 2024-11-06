@@ -150,6 +150,11 @@ class VoucherController extends BaseController
             if ($existingVoucher) {
                 return $this->sendError('Người dùng đã có voucher này.', [], 400);
             }
+            
+            // Kiểm tra ngày hết hạn của voucher
+            if ($voucher->end_date < now()) {
+                return $this->sendError('Voucher này đã hết hạn.', [], 400);
+            }
 
             // Kiểm tra số lượng voucher còn lại
             if ($voucher->quantity <= 0) {
