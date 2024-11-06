@@ -119,31 +119,35 @@ class PaymentController extends BaseController
         try {
             // Kiểm tra voucher từ request
             $voucherId = $request->input('voucher_id');
+            if ($voucherId) {
+                if (is_null($order->voucher_id)) {
 
-            if ($voucherId && is_null($order->voucher_id)) {
-                // Lấy thông tin người dùng và voucher
-                $user = User::with('vouchers')->find($userId);
-                $voucher = $user->vouchers()->find($voucherId);
+                    // Lấy thông tin người dùng và voucher
+                    $user = User::with('vouchers')->find($userId);
+                    $voucher = $user->vouchers()->find($voucherId);
 
-                // Xác minh tính hợp lệ của voucher
-                if ($voucher && $voucher->active && now()->between($voucher->start_date, $voucher->end_date)) {
-                    // Tính toán chiết khấu
-                    $discount = 0;
-                    if ($voucher->discount_type === 'percentage') {
-                        $discount = ($amount * $voucher->discount_value) / 100;
-                    } else {
-                        $discount = $voucher->discount_value;
+                    // Xác minh tính hợp lệ của voucher
+                    if ($voucher && $voucher->active && now()->between($voucher->start_date, $voucher->end_date)) {
+                        // Tính toán chiết khấu
+                        $discount = 0;
+                        if ($voucher->discount_type === 'percentage') {
+                            $discount = ($amount * $voucher->discount_value) / 100;
+                        } else {
+                            $discount = $voucher->discount_value;
+                        }
+                        $discount = min($discount, $voucher->max_discount_value);
+                        $amount -= $discount;
+
+                        // Cập nhật thông tin voucher vào đơn hàng
+                        $order->voucher_id = $voucherId;
+                        $order->total_price = $amount; // Cập nhật tổng giá trị đơn hàng
+                        $user->vouchers()->detach($voucherId); // Xóa voucher khỏi người dùng
+                        $order->save();
+                    } elseif ($voucherId) {
+                        return $this->sendError('Voucher không hợp lệ hoặc đã hết hạn!', '', 400);
                     }
-                    $discount = min($discount, $voucher->max_discount_value);
-                    $amount -= $discount;
-
-                    // Cập nhật thông tin voucher vào đơn hàng
-                    $order->voucher_id = $voucherId;
-                    $order->total_price = $amount; // Cập nhật tổng giá trị đơn hàng
-                    $user->vouchers()->detach($voucherId); // Xóa voucher khỏi người dùng
-                    $order->save();
-                } elseif ($voucherId) {
-                    return $this->sendError('Voucher không hợp lệ hoặc đã hết hạn!', '', 400);
+                } else {
+                    return $this->sendError('Đơn hàng đã có voucher rồi!', '', 400);
                 }
             }
 
