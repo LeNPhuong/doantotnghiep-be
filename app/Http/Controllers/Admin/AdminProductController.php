@@ -11,6 +11,45 @@ use Illuminate\Validation\ValidationException;
 
 class AdminProductController extends BaseController
 {
+    /**
+     * @OA\Get(
+     *     path="/api/admin/products",
+     *     summary="Lấy danh sách sản phẩm",
+     *     description="Lấy danh sách các sản phẩm",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Danh sách sản phẩm",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="Sản phẩm A"),
+     *                     @OA\Property(property="price", type="number", format="float", example=100000.0),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2023-10-15T12:45:00Z")
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Lấy sản phẩm thành công")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi trong quá trình lấy sản phẩm",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Lỗi trong quá trình lấy sản phẩm"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi...")
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
         try {
@@ -26,6 +65,60 @@ class AdminProductController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/admin/product/{id}",
+     *     summary="Lấy thông tin chi tiết sản phẩm",
+     *     description="Lấy chi tiết sản phẩm theo ID, bao gồm danh mục và các đơn vị hoạt động",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID của sản phẩm"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sản phẩm đã được lấy thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", description="ID sản phẩm"),
+     *                 @OA\Property(property="name", type="string", description="Tên sản phẩm"),
+     *                 @OA\Property(property="price", type="number", format="float", description="Giá sản phẩm"),
+     *                 @OA\Property(property="description", type="string", description="Mô tả sản phẩm"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", description="Ngày tạo sản phẩm"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", description="Ngày cập nhật sản phẩm"),
+     *                 @OA\Property(property="category", type="object",
+     *                     @OA\Property(property="id", type="integer", description="ID danh mục"),
+     *                     @OA\Property(property="name", type="string", description="Tên danh mục"),
+     *                     @OA\Property(property="active", type="boolean", description="Trạng thái danh mục")
+     *                 ),
+     *                 @OA\Property(property="units", type="array", 
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", description="ID đơn vị"),
+     *                         @OA\Property(property="name", type="string", description="Tên đơn vị"),
+     *                         @OA\Property(property="active", type="boolean", description="Trạng thái đơn vị")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Sản phẩm không tồn tại",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", description="Thông báo lỗi"),
+     *             @OA\Property(property="message", type="string", description="Mô tả chi tiết lỗi"),
+     *             @OA\Property(property="data", type="object", description="Dữ liệu trả về khi lỗi xảy ra")
+     *         )
+     *     )
+     * )
+     */
     public function show($id)
     {
         try {
@@ -45,6 +138,60 @@ class AdminProductController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/admin/products/{id}/update",
+     *     summary="Lấy thông tin sản phẩm",
+     *     description="Lấy chi tiết sản phẩm theo ID, bao gồm danh mục và các đơn vị hoạt động",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID của sản phẩm"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy sản phẩm thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", description="ID sản phẩm"),
+     *                 @OA\Property(property="name", type="string", description="Tên sản phẩm"),
+     *                 @OA\Property(property="price", type="number", format="float", description="Giá sản phẩm"),
+     *                 @OA\Property(property="description", type="string", description="Mô tả sản phẩm"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", description="Ngày tạo sản phẩm"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", description="Ngày cập nhật sản phẩm"),
+     *                 @OA\Property(property="category", type="object",
+     *                     @OA\Property(property="id", type="integer", description="ID danh mục"),
+     *                     @OA\Property(property="name", type="string", description="Tên danh mục"),
+     *                     @OA\Property(property="active", type="boolean", description="Trạng thái danh mục")
+     *                 ),
+     *                 @OA\Property(property="units", type="array", 
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", description="ID đơn vị"),
+     *                         @OA\Property(property="name", type="string", description="Tên đơn vị"),
+     *                         @OA\Property(property="active", type="boolean", description="Trạng thái đơn vị")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Sản phẩm không tồn tại",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", description="Thông báo lỗi"),
+     *             @OA\Property(property="message", type="string", description="Mô tả chi tiết lỗi"),
+     *             @OA\Property(property="data", type="object", description="Dữ liệu trả về khi lỗi xảy ra")
+     *         )
+     *     )
+     * )
+     */
     public function edit($id)
     {
         try {
@@ -63,9 +210,109 @@ class AdminProductController extends BaseController
             return $this->sendError('Sản phẩm không tồn tại', ['error' => $th->getMessage()], 404);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/product/{id}/update",
+     *     summary="Cập nhật thông tin sản phẩm",
+     *     description="Cập nhật thông tin sản phẩm bao gồm các trường như tên, giá, mô tả, ảnh, danh mục,...",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID của sản phẩm cần cập nhật"
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(property="_method", type="string", example="put"),
+     *                 @OA\Property(property="cate_id", type="integer", description="ID danh mục sản phẩm",example=1),
+     *                 @OA\Property(property="name", type="string", maxLength=255, description="Tên sản phẩm"),
+     *                 @OA\Property(property="price", type="number", format="float", description="Giá sản phẩm"),
+     *                 @OA\Property(property="sale", type="integer", description="Giảm giá (%)", example=10),
+     *                 @OA\Property(property="img", type="string", format="binary", description="Ảnh sản phẩm"),
+     *                 @OA\Property(property="quantity", type="integer", description="Số lượng sản phẩm"),
+     *                 @OA\Property(property="description", type="string", description="Mô tả sản phẩm"),
+     *                 @OA\Property(property="made", type="string", maxLength=255, description="Nơi sản xuất"),
+     *                 @OA\Property(property="active", type="integer", example=1),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Cập nhật sản phẩm thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", description="ID sản phẩm"),
+     *                 @OA\Property(property="name", type="string", description="Tên sản phẩm"),
+     *                 @OA\Property(property="price", type="number", format="float", description="Giá sản phẩm"),
+     *                 @OA\Property(property="description", type="string", description="Mô tả sản phẩm"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", description="Ngày tạo sản phẩm"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", description="Ngày cập nhật sản phẩm"),
+     *                 @OA\Property(property="category", type="object",
+     *                     @OA\Property(property="id", type="integer", description="ID danh mục"),
+     *                     @OA\Property(property="name", type="string", description="Tên danh mục"),
+     *                     @OA\Property(property="active", type="integer", example=1),
+     *                 ),
+     *                 @OA\Property(property="img", type="string", description="URL ảnh sản phẩm"),
+     *                 @OA\Property(property="quantity", type="integer", description="Số lượng sản phẩm"),
+     *                 @OA\Property(property="active", type="integer", example=1),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Sản phẩm không tồn tại",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", description="Thông báo lỗi"),
+     *             @OA\Property(property="message", type="string", description="Mô tả chi tiết lỗi")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Dữ liệu không hợp lệ",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="object", 
+     *                 @OA\Property(property="cate_id", type="array", 
+     *                     @OA\Items(type="string", description="ID danh mục không hợp lệ")
+     *                 ),
+     *                 @OA\Property(property="name", type="array", 
+     *                     @OA\Items(type="string", description="Tên sản phẩm không hợp lệ")
+     *                 ),
+     *                 @OA\Property(property="price", type="array", 
+     *                     @OA\Items(type="string", description="Giá sản phẩm không hợp lệ")
+     *                 ),
+     *                 @OA\Property(property="img", type="array", 
+     *                     @OA\Items(type="string", description="Định dạng ảnh không hợp lệ")
+     *                 ),
+     *                 @OA\Property(property="quantity", type="array", 
+     *                     @OA\Items(type="string", description="Số lượng không hợp lệ")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi server",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", description="Thông báo lỗi"),
+     *             @OA\Property(property="message", type="string", description="Mô tả chi tiết lỗi")
+     *         )
+     *     )
+     * )
+     */
     public function update(Request $request, $id)
     {
-
         try {
             $product = Cache::remember("product_detail_{$id}", 60, function () use ($id) {
                 return Product::with([
@@ -119,6 +366,61 @@ class AdminProductController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/admin/product/search",
+     *     summary="Tìm kiếm sản phẩm",
+     *     description="Tìm kiếm sản phẩm theo từ khóa trong tên hoặc mô tả",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="query",
+     *         description="Từ khóa tìm kiếm",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="Laptop"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Danh sách sản phẩm tìm thấy",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="array", 
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", description="ID sản phẩm"),
+     *                     @OA\Property(property="name", type="string", description="Tên sản phẩm"),
+     *                     @OA\Property(property="price", type="number", format="float", description="Giá sản phẩm"),
+     *                     @OA\Property(property="description", type="string", description="Mô tả sản phẩm"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", description="Ngày tạo sản phẩm"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", description="Ngày cập nhật sản phẩm")
+     *                 )
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Yêu cầu không hợp lệ",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", description="Thông báo lỗi"),
+     *             @OA\Property(property="message", type="string", description="Mô tả chi tiết lỗi")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi server",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", description="Thông báo lỗi"),
+     *             @OA\Property(property="message", type="string", description="Mô tả chi tiết lỗi")
+     *         )
+     *     )
+     * )
+     */
     public function search(Request $request)
     {
         try {
@@ -132,6 +434,62 @@ class AdminProductController extends BaseController
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/admin/product/{id}/soft-delete",
+     *     summary="Xóa mềm sản phẩm",
+     *     description="Xóa mềm một sản phẩm theo ID (sản phẩm vẫn tồn tại trong cơ sở dữ liệu nhưng sẽ bị ẩn khỏi kết quả tìm kiếm mặc định).",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID của sản phẩm cần xóa mềm",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Xóa mềm sản phẩm thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Sản phẩm đã được xóa mềm thành công.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Sản phẩm không tồn tại",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Không tìm thấy sản phẩm."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi server",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi trong quá trình xóa mềm sản phẩm."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi")
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function softDelete($id)
     {
         try {
@@ -145,6 +503,75 @@ class AdminProductController extends BaseController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/admin/product/{id}/restore",
+     *     summary="Khôi phục sản phẩm đã xóa mềm",
+     *     description="Khôi phục một sản phẩm đã bị xóa mềm theo ID.",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID của sản phẩm cần khôi phục",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Khôi phục sản phẩm thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Sản phẩm đã được khôi phục thành công."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Tên sản phẩm"),
+     *                 @OA\Property(property="price", type="number", format="float", example=1000.00),
+     *                 @OA\Property(property="quantity", type="integer", example=50),
+     *                 @OA\Property(property="description", type="string", example="Mô tả sản phẩm"),
+     *                 @OA\Property(property="category", type="string", example="Danh mục sản phẩm"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-06T14:52:00Z"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-06T15:00:00Z")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Không tìm thấy sản phẩm đã xóa",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Không tìm thấy sản phẩm đã xóa."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi server",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi trong quá trình khôi phục sản phẩm."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+
     public function restore($id)
     {
         try {
@@ -156,6 +583,81 @@ class AdminProductController extends BaseController
             return $this->sendError('Không tìm thấy sản phẩm đã xóa.', ['error' => $th->getMessage()], 404);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/product/create",
+     *     summary="Tạo mới sản phẩm",
+     *     description="Tạo một sản phẩm mới với các thuộc tính cần thiết.",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         content={
+     *             @OA\MediaType(
+     *                 mediaType="multipart/form-data",
+     *                 @OA\Schema(
+     *                     type="object",
+     *                     @OA\Property(property="cate_id", type="integer", description="ID của danh mục", example=1),
+     *                     @OA\Property(property="name", type="string", description="Tên sản phẩm", example="Tên sản phẩm mẫu"),
+     *                     @OA\Property(property="price", type="number", format="float", description="Giá sản phẩm", example=1000.00),
+     *                     @OA\Property(property="sale", type="integer", description="Phần trăm giảm giá", example=10, nullable=true),
+     *                     @OA\Property(
+     *                         property="img",
+     *                         type="string",
+     *                         format="binary",
+     *                         description="File ảnh sản phẩm"
+     *                     ),
+     *                     @OA\Property(property="quantity", type="integer", description="Số lượng sản phẩm", example=50),
+     *                     @OA\Property(property="description", type="string", description="Mô tả sản phẩm", example="Mô tả chi tiết sản phẩm", nullable=true),
+     *                     @OA\Property(property="made", type="string", description="Xuất xứ sản phẩm", example="Xuất xứ sản phẩm", nullable=true),
+     *                     @OA\Property(property="active", type="integer", example=1),
+     *                 )
+     *             )
+     *         }
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sản phẩm đã được thêm thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Sản phẩm đã được thêm thành công."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="cate_id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Tên sản phẩm mẫu"),
+     *                 @OA\Property(property="price", type="number", format="float", example=1000.00),
+     *                 @OA\Property(property="sale", type="integer", example=10, nullable=true),
+     *                 @OA\Property(property="img", type="string", example="URL ảnh sản phẩm"),
+     *                 @OA\Property(property="img_public_id", type="string", example="Public ID của ảnh trên Cloudinary"),
+     *                 @OA\Property(property="quantity", type="integer", example=50),
+     *                 @OA\Property(property="description", type="string", example="Mô tả chi tiết sản phẩm", nullable=true),
+     *                 @OA\Property(property="made", type="string", example="Xuất xứ sản phẩm", nullable=true),
+     *                 @OA\Property(property="active", type="boolean", example=true),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-06T14:52:00Z"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-06T14:52:00Z")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Có lỗi xảy ra trong quá trình thêm sản phẩm",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Có lỗi xảy ra trong quá trình thêm sản phẩm"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi")
+     *             )
+     *         )
+     *     )
+     * )
+     */
 
     public function create(Request $request)
     {

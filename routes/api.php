@@ -136,7 +136,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     
     // Xóa mềm sản phẩm
     Route::delete('admin/product/{id}/soft-delete', [AdminProductController::class, 'softDelete']);
-    Route::post('admin/product/{id}/restore', [AdminProductController::class, 'restore']);
+    Route::patch('admin/product/{id}/restore', [AdminProductController::class, 'restore']);
     
     // Thêm sản phẩm
     Route::post('admin/product/create', [AdminProductController::class, 'create']);
