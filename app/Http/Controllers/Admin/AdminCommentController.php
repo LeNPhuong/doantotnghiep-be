@@ -49,7 +49,13 @@ class AdminCommentController extends BaseController
     {
         try {
             $comments = Comment::onlyTrashed()->findOrFail($id);
+
+            if (!$comments) {
+                return $this->sendError('Không tìm thấy bình luận', [], 404);
+            }
+            
             $comments->restore();
+
 
             return $this->sendResponse($comments, 'Bình luận đã được khôi phục thành công.');
         } catch (\Throwable $th) {

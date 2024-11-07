@@ -44,8 +44,6 @@ class Category extends Model
                     ->where('units.active', 1)
                     ->withPivot('category_id', 'unit_id');
     }
-    
-
 
     protected static function boot()
     {

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->float('price');
             $table->string('unit');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

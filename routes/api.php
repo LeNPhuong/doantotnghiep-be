@@ -2,6 +2,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminCommentController;
+use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CommentController;
@@ -193,6 +194,13 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::delete('admin/comments/delete/{id}',[AdminCommentController::class, 'delete']);
     Route::post('admin/comments/restore/{id}',[AdminCommentController::class, 'restore']);
     
+    // Quản lý đơn hàng
+    Route::get('admin/orders',[AdminOrderController::class, 'index']);
+    Route::get('admin/orders/search',[AdminOrderController::class, 'search']);
+    Route::get('admin/orders/{id}',[AdminOrderController::class, 'show']);
+    Route::get('admin/print/{id}',[AdminOrderController::class, 'print']);
+    Route::put('admin/orders/confirm/{id}',[AdminOrderController::class, 'confirm']);
+
 });
 
 

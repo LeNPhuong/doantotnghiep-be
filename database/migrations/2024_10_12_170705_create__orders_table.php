@@ -20,6 +20,7 @@ return new class extends Migration
             $table->float('total_price');
             $table->text('cancellation_reason')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
