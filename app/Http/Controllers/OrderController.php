@@ -140,59 +140,49 @@ class OrderController extends BaseController
     /**
      * @OA\Post(
      *     path="/api/checkout",
-     *     summary="Xử lý checkout đơn hàng",
-     *     operationId="checkout",
-     *     description="Tạo đơn hàng mới từ giỏ hàng của người dùng",
-     *     security={{"bearer": {}}},
+     *     summary="Checkout giỏ hàng",
+     *     description="Thực hiện đặt hàng và xử lý chi tiết đơn hàng từ giỏ hàng. Đơn hàng mới sẽ được tạo nếu không có đơn hàng chưa hoàn thành.",
+     *     security={{"bearer":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"cart"},
-     *             @OA\Property(
-     *                 property="cart",
-     *                 type="array",
+     *             @OA\Property(property="cart", type="array",
      *                 @OA\Items(
      *                     @OA\Property(property="id", type="integer", example=1, description="ID của sản phẩm"),
      *                     @OA\Property(property="quantity", type="integer", example=2, description="Số lượng sản phẩm"),
-     *                     @OA\Property(property="price", type="number", format="float", example=100, description="Giá sản phẩm"),
      *                     @OA\Property(property="unit", type="string", example="1kg", description="Đơn vị sản phẩm")
      *                 )
      *             ),
-     *             @OA\Property(
-     *                 property="voucher_id",
-     *                 type="integer",
-     *                 example=1,
-     *                 description="ID của voucher (nếu có)"
-     *             )
+     *             @OA\Property(property="voucher_id", type="integer", example=1, description="ID của voucher (tuỳ chọn)")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Đặt hàng thành công",
+     *         description="Đặt hàng thành công!",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object", description="Thông tin đơn hàng",
-     *                 @OA\Property(property="id", type="integer", description="ID của đơn hàng"),
-     *                 @OA\Property(property="code", type="string", description="Mã đơn hàng"),
-     *                 @OA\Property(property="total_price", type="number", format="float", description="Tổng giá trị đơn hàng"),
-     *                 @OA\Property(property="status_id", type="integer", description="Trạng thái đơn hàng"),
-     *                 @OA\Property(property="created_at", type="string", format="date-time", description="Thời gian tạo đơn hàng"),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time", description="Thời gian cập nhật đơn hàng")
-     *             )
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object", description="Thông tin đơn hàng"),
+     *             @OA\Property(property="message", type="string", example="Đặt hàng thành công!")
      *         )
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="Lỗi định dạng hoặc dữ liệu không hợp lệ",
+     *         description="Lỗi định dạng hoặc thiếu hàng",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", description="Thông báo lỗi"),
-     *             @OA\Property(property="errors", type="object", description="Chi tiết lỗi")
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Voucher không hợp lệ hoặc đã hết hạn!"),
+     *             @OA\Property(property="data", type="array", @OA\Items())
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Lỗi không tìm thấy",
+     *         description="Lỗi xử lý",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", description="Thông báo lỗi")
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Lỗi định dạng."),
+     *             @OA\Property(property="data", type="object", 
+     *                 @OA\Property(property="error", type="string", example="Thông báo lỗi cụ thể")
+     *             )
      *         )
      *     )
      * )
@@ -215,101 +205,128 @@ class OrderController extends BaseController
         // Bắt đầu transaction để đảm bảo dữ liệu nhất quán
         DB::beginTransaction();
         try {
-            // Lấy giỏ hàng từ request
             $cart = $request->cart;
-
-            // Lấy thông tin người dùng hiện tại
             $user = User::with('vouchers')->find(auth()->user()->id);
-
-            // Lấy voucher từ request nếu có
             $voucherId = $request->voucher_id;
             $voucher = null;
 
             if ($voucherId) {
-                // Kiểm tra xem voucher có thuộc sở hữu của người dùng không
                 $voucher = $user->vouchers()->where('vouchers.id', $voucherId)->first();
                 if (!$voucher || !$voucher->active || now()->lt($voucher->start_date) || now()->gt($voucher->end_date)) {
                     return $this->sendError('Voucher không hợp lệ hoặc đã hết hạn!', '', 400);
                 }
             }
 
-            // Lấy danh sách product_id từ giỏ hàng
             $productIds = array_column($cart, 'id');
             $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-            // Kiểm tra xem có đơn hàng nào đang chờ thanh toán không
+            // Kiểm tra xem đã có đơn hàng chưa hoàn thành chưa
             $existingOrder = Order::where('user_id', $user->id)
-                ->where('status_id', 1) // Trạng thái "đang chờ thanh toán"
+                ->where('status_id', 1)
                 ->first();
 
             if ($existingOrder) {
-                // Nếu có đơn hàng chờ thanh toán, trả về thông tin đơn hàng
-                return $this->sendResponse($existingOrder, 'Bạn đã có một đơn hàng chưa hoàn thành. Bạn có thể thanh toán cho đơn hàng này.');
+                $existingOrderDetails = $existingOrder->orderDetails()->get()->keyBy('product_id');
+
+                foreach ($cart as $item) {
+                    $orderDetail = $existingOrderDetails->get($item['id']);
+                    $product = $products->get($item['id']);
+
+                    if ($orderDetail) {
+                        // Chỉ cập nhật nếu số lượng thay đổi
+                        if ($product && $product->quantity >= $item['quantity']) {
+                            if ($orderDetail->quantity != $item['quantity']) {
+                                $product->quantity -= ($item['quantity'] - $orderDetail->quantity);
+                                $orderDetail->quantity = $item['quantity'];
+                                $orderDetail->save();
+                                $product->save();
+                                Cache::forget("product_detail_{$product->id}");
+                            }
+                        } else {
+                            DB::rollBack();
+                            return $this->sendError("Sản phẩm {$product->name} không đủ hàng trong kho!", '', 400);
+                        }
+                    } else {
+                        // Thêm sản phẩm mới nếu chưa có trong đơn hàng
+                        if ($product && $product->quantity >= $item['quantity']) {
+                            OrderDetail::create([
+                                'order_id' => $existingOrder->id,
+                                'product_id' => $item['id'],
+                                'quantity' => $item['quantity'],
+                                'price' => $item['price'],
+                                'unit' => $item['unit'],
+                            ]);
+                            $product->quantity -= $item['quantity'];
+                            $product->save();
+                            Cache::forget("product_detail_{$product->id}");
+                        } else {
+                            DB::rollBack();
+                            return $this->sendError("Sản phẩm {$product->name} không đủ hàng trong kho!", '', 400);
+                        }
+                    }
+                }
+
+                // Xóa các sản phẩm có trong đơn hàng nhưng không có trong giỏ hàng
+                $cartProductIds = collect($cart)->pluck('id');
+                $orderDetailsToDelete = $existingOrderDetails->whereNotIn('product_id', $cartProductIds);
+
+                foreach ($orderDetailsToDelete as $detail) {
+                    $product = $products->get($detail->product_id);
+                    if ($product) {
+                        $product->quantity += $detail->quantity;
+                        $product->save();
+                        Cache::forget("product_detail_{$product->id}");
+                    }
+                    $detail->delete();
+                }
+            } else {
+                // Tạo đơn hàng mới nếu không có đơn hàng chưa hoàn thành
+                $totalAmount = array_sum(array_map(function ($item) {
+                    return $item['price'] * $item['quantity'];
+                }, $cart));
+
+                if ($voucher) {
+                    $discount = $voucher->discount_type === 'percentage'
+                        ? ($totalAmount * $voucher->discount_value) / 100
+                        : $voucher->discount_value;
+                    if ($voucher->max_discount_value) {
+                        $discount = min($discount, $voucher->max_discount_value);
+                    }
+                    $totalAmount = max(0, $totalAmount - $discount);
+                    $user->vouchers()->detach($voucher->id);
+                }
+
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->code = $this->generateOrderCode();
+                $order->voucher_id = $voucherId;
+                $order->total_price = $totalAmount;
+                $order->status_id = 1;
+                $order->save();
+
+                foreach ($cart as $item) {
+                    $product = $products->get($item['id']);
+                    if ($product && $product->quantity >= $item['quantity']) {
+                        OrderDetail::create([
+                            'order_id' => $order->id,
+                            'product_id' => $item['id'],
+                            'quantity' => $item['quantity'],
+                            'price' => $item['price'],
+                            'unit' => $item['unit'],
+                        ]);
+                        $product->quantity -= $item['quantity'];
+                        $product->save();
+                        Cache::forget("product_detail_{$product->id}");
+                    } else {
+                        DB::rollBack();
+                        return $this->sendError("Sản phẩm {$product->name} không đủ hàng trong kho!", '', 400);
+                    }
+                }
             }
 
-            // Tính toán tổng số tiền
-            $totalAmount = array_sum(array_map(function ($item) {
-                return $item['price'] * $item['quantity'];
-            }, $cart));
-            // Áp dụng chiết khấu nếu có voucher hợp lệ
-            if ($voucher) {
-                $discount = $voucher->discount_type === 'percentage'
-                    ? ($totalAmount * $voucher->discount_value) / 100
-                    : $voucher->discount_value;
-                if ($voucher->max_discount_value) {
-                    $discount = min($discount, $voucher->max_discount_value); // Không vượt quá giá trị tối đa
-                }
-                if ($totalAmount > $discount) {
-                    $totalAmount -= $discount; // Giảm tổng số tiền
-                } else {
-                    $totalAmount = 0;
-                }
-                // Xóa voucher sau khi sử dụng
-                $user->vouchers()->detach($voucher->id);
-            }
-
-            // Tạo đơn hàng
-            $order = new Order();
-            $order->user_id = $user->id;
-            $order->code = $this->generateOrderCode();
-            $order->voucher_id = $voucherId;
-            $order->total_price = $totalAmount;
-            $order->status_id = 1; // Trạng thái "đang chờ thanh toán"
-            $order->save();
-
-            // Lưu từng sản phẩm vào bảng order_items
-            foreach ($cart as $item) {
-                $product = $products->get($item['id']);
-
-                // Kiểm tra số lượng sản phẩm trong kho
-                if ($product && $product->quantity >= $item['quantity']) {
-                    $product->quantity -= $item['quantity'];
-                    $product->save();
-
-                    // Xóa cache cho sản phẩm đang hoạt động
-                    Cache::forget('active_products');
-                    Cache::forget("product_detail_{$product->id}");
-
-                    // Lưu thông tin chi tiết đơn hàng
-                    OrderDetail::create([
-                        'order_id' => $order->id,
-                        'product_id' => $item['id'],
-                        'quantity' => $item['quantity'],
-                        'price' => $item['price'],
-                        'unit' => $item['unit'],
-                    ]);
-                } else {
-                    // Nếu không đủ hàng trong kho, rollback và trả về lỗi
-                    DB::rollBack();
-                    return $this->sendError("Sản phẩm {$product->name} không đủ hàng trong kho!", '', 400);
-                }
-            }
-
-            // Commit transaction nếu tất cả đều thành công
             DB::commit();
-            return $this->sendResponse($order, 'Đặt hàng thành công!');
+            return $this->sendResponse($existingOrder ?? $order, 'Đặt hàng thành công!');
         } catch (\Throwable $th) {
-            // Rollback nếu có lỗi xảy ra
             DB::rollBack();
             return $this->sendError('Lỗi định dạng.', ['error' => $th->getMessage()], 404);
         }

@@ -2656,17 +2656,14 @@
         },
         "/api/checkout": {
             "post": {
-                "summary": "Xử lý checkout đơn hàng",
-                "description": "Tạo đơn hàng mới từ giỏ hàng của người dùng",
-                "operationId": "checkout",
+                "summary": "Checkout giỏ hàng",
+                "description": "Thực hiện đặt hàng và xử lý chi tiết đơn hàng từ giỏ hàng. Đơn hàng mới sẽ được tạo nếu không có đơn hàng chưa hoàn thành.",
+                "operationId": "36de50fc119da9c2fd60ff6646a35a84",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "cart"
-                                ],
                                 "properties": {
                                     "cart": {
                                         "type": "array",
@@ -2682,12 +2679,6 @@
                                                     "type": "integer",
                                                     "example": 2
                                                 },
-                                                "price": {
-                                                    "description": "Giá sản phẩm",
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 100
-                                                },
                                                 "unit": {
                                                     "description": "Đơn vị sản phẩm",
                                                     "type": "string",
@@ -2698,7 +2689,7 @@
                                         }
                                     },
                                     "voucher_id": {
-                                        "description": "ID của voucher (nếu có)",
+                                        "description": "ID của voucher (tuỳ chọn)",
                                         "type": "integer",
                                         "example": 1
                                     }
@@ -2710,43 +2701,22 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Đặt hàng thành công",
+                        "description": "Đặt hàng thành công!",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
                                         "data": {
                                             "description": "Thông tin đơn hàng",
-                                            "properties": {
-                                                "id": {
-                                                    "description": "ID của đơn hàng",
-                                                    "type": "integer"
-                                                },
-                                                "code": {
-                                                    "description": "Mã đơn hàng",
-                                                    "type": "string"
-                                                },
-                                                "total_price": {
-                                                    "description": "Tổng giá trị đơn hàng",
-                                                    "type": "number",
-                                                    "format": "float"
-                                                },
-                                                "status_id": {
-                                                    "description": "Trạng thái đơn hàng",
-                                                    "type": "integer"
-                                                },
-                                                "created_at": {
-                                                    "description": "Thời gian tạo đơn hàng",
-                                                    "type": "string",
-                                                    "format": "date-time"
-                                                },
-                                                "updated_at": {
-                                                    "description": "Thời gian cập nhật đơn hàng",
-                                                    "type": "string",
-                                                    "format": "date-time"
-                                                }
-                                            },
                                             "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đặt hàng thành công!"
                                         }
                                     },
                                     "type": "object"
@@ -2755,18 +2725,22 @@
                         }
                     },
                     "400": {
-                        "description": "Lỗi định dạng hoặc dữ liệu không hợp lệ",
+                        "description": "Lỗi định dạng hoặc thiếu hàng",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "error": {
-                                            "description": "Thông báo lỗi",
-                                            "type": "string"
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
                                         },
-                                        "errors": {
-                                            "description": "Chi tiết lỗi",
-                                            "type": "object"
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Voucher không hợp lệ hoặc đã hết hạn!"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
                                         }
                                     },
                                     "type": "object"
@@ -2775,14 +2749,27 @@
                         }
                     },
                     "404": {
-                        "description": "Lỗi không tìm thấy",
+                        "description": "Lỗi xử lý",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "error": {
-                                            "description": "Thông báo lỗi",
-                                            "type": "string"
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Thông báo lỗi cụ thể"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
