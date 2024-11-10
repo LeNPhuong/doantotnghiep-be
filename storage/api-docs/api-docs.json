@@ -7513,6 +7513,12 @@
                                                     "description": "ID Đơn vị sản phẩm",
                                                     "type": "string",
                                                     "example": "1"
+                                                },
+                                                "price": {
+                                                    "description": "Giá của sản phẩm",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100000
                                                 }
                                             },
                                             "type": "object"
