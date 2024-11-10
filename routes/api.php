@@ -120,25 +120,13 @@ Route::post('/test', [PaymentController::class, 'test']);
 Route::middleware(['auth:api', 'admin'])->group(function () {
 
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
-
-    // List sản phẩm
     Route::get('admin/products',[AdminProductController::class, 'index']);
-    
-    // Tìm kiếm sản phẩm
     Route::get('admin/product/search',[AdminProductController::class, 'search']);
-    
-    // Chi tiết sản phẩm
     Route::get('admin/product/{id}',[AdminProductController::class, 'show']);
-
-    // update sản phẩm 
     Route::get('admin/product/{id}/update',[AdminProductController::class, 'edit']);
     Route::put('admin/product/{id}/update', [AdminProductController::class, 'update']);
-    
-    // Xóa mềm sản phẩm
     Route::delete('admin/product/{id}/soft-delete', [AdminProductController::class, 'softDelete']);
     Route::patch('admin/product/{id}/restore', [AdminProductController::class, 'restore']);
-    
-    // Thêm sản phẩm
     Route::post('admin/product/create', [AdminProductController::class, 'create']);
     
     // List danh mục

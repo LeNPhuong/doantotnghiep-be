@@ -25,7 +25,9 @@ class AdminStatusController extends BaseController
             $inputSearch = $request->input('query');
 
             $Status = Status::search($inputSearch)->get();
-
+            if($Status->isEmpty()){
+                return $this->sendError('Không tìm thấy trạng thái', [], 404);
+            }
             return $this->sendResponse($Status, 'trạng thái tìm thấy');
         } catch (\Throwable $th) {
             return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm trạng thái', ['error' => $th->getMessage()], 500);
