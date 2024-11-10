@@ -176,7 +176,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/status/edit/{id}',[AdminStatusController::class, 'edit']);
     Route::put('admin/status/update/{id}',[AdminStatusController::class, 'update']);
     Route::delete('admin/status/delete/{id}',[AdminStatusController::class, 'delete']);
-    Route::post('admin/status/restore/{id}',[AdminStatusController::class, 'restore']);
+    Route::patch('admin/status/restore/{id}',[AdminStatusController::class, 'restore']);
     Route::post('admin/status/create',[AdminStatusController::class, 'create']);
     
     // Quản lý comment
