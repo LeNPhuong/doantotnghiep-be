@@ -192,7 +192,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     // Quản lý comment
     Route::get('admin/comments/{id}',[AdminCommentController::class, 'index']);
     Route::delete('admin/comments/delete/{id}',[AdminCommentController::class, 'delete']);
-    Route::post('admin/comments/restore/{id}',[AdminCommentController::class, 'restore']);
+    Route::patch('admin/comments/restore/{id}',[AdminCommentController::class, 'restore']);
     
     // Quản lý đơn hàng
     Route::get('admin/orders',[AdminOrderController::class, 'index']);
