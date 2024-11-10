@@ -13,11 +13,16 @@ class Comment extends Model
 
     protected $fillable = ['product_id', 'user_id', 'rating', 'comment', 'likes'];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
     public function toSearchableArray()
     {
         return [
             'id' => $this->id,
-            'comment' => $this->name
+            'comment' => $this->comment,
+            'name'=> $this->user ? $this->user->name : null,
         ];
     }
 
@@ -26,8 +31,4 @@ class Comment extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 }

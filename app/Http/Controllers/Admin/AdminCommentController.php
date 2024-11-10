@@ -68,13 +68,19 @@ class AdminCommentController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $comment = Comment::search($inputSearch)->get();
+            $comment = comment::with('user')->get();
 
-            if($comment->isEmpty()){
-                return $this->sendResponse($comment, 'Không tìm thấy bình luận');
+            // Tìm kiếm trong 'code' của đơn hàng và 'name' của người dùng
+            $filterComment = $comment->filter(function ($comment) use ($inputSearch) {
+                return (strpos(strtolower($comment->comment), needle: strtolower($inputSearch)) !== false) ||
+                    (isset($comment->user) && strpos(strtolower($comment->user->name), needle: strtolower($inputSearch)) !== false);
+            });
+
+            if($filterComment->isEmpty()){
+                return $this->sendResponse($filterComment, 'Không tìm thấy bình luận');
             }
 
-            return $this->sendResponse($comment, 'Bình luận tìm thấy');
+            return $this->sendResponse($filterComment, 'Bình luận tìm thấy');
         } catch (\Throwable $th) {
             return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm bình luận', ['error' => $th->getMessage()], 500);
         }
