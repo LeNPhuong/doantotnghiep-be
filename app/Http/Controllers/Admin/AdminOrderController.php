@@ -482,9 +482,18 @@ class AdminOrderController extends BaseController
     {
         try {
             $order = Order::with(['user', 'status', 'orderDetails.product', 'voucher', 'transaction'])->findOrFail($id);
-
-            if (!$order) {
+            if(!$order){
                 return $this->sendError('Không tìm thấy đơn hàng', [], 404);
+            }else if($order->status->text_status == 'Chưa thanh toán'){
+                return $this->sendError('Đơn hàng chưa thanh toán', [], 400);
+            }else if($order->status->text_status == 'Đang giao'){
+                return $this->sendError('Đơn hàng đang giao', [], 400);
+            }else if($order->status->text_status == 'Đã giao'){
+                return $this->sendError('Đơn đã giao', [], 400);
+            }else if($order->status->text_status == 'Đã hủy'){
+                return $this->sendError('Đơn hàng đã hủy', [], 400);
+            }else if($order->status->text_status == 'Trả hàng'){
+                return $this->sendError('Đơn hàng đã trả hàng', [], 400);
             }
 
             if ($order->status_id == 2) {
