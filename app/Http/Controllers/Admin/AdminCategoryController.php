@@ -385,7 +385,65 @@ class AdminCategoryController extends BaseController
         }
     }
 
-
+    /**
+     * @OA\Get(
+     *     path="/api/admin/categories/search",
+     *     summary="Tìm kiếm danh mục",
+     *     description="Tìm kiếm danh mục theo tên hoặc các thuộc tính khác của danh mục.",
+     *     tags={"admin/category"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="query",
+     *         description="Từ khóa tìm kiếm trong tên hoặc thuộc tính của danh mục.",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="example search"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Danh sách danh mục tìm thấy",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Danh mục tìm thấy"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="Danh mục A"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-10T10:00:00"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-10T10:00:00")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Không tìm thấy danh mục",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Không tìm thấy danh mục"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi hệ thống khi tìm kiếm danh mục",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi trong quá trình tìm kiếm danh mục"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="error", type="string", example="Error details")
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function search(Request $request)
     {
         try {
@@ -393,7 +451,7 @@ class AdminCategoryController extends BaseController
 
             $category = Category::search($inputSearch)->get();
 
-            if($category->isEmpty()){
+            if ($category->isEmpty()) {
                 return $this->sendResponse($category, 'Không tìm thấy danh mục');
             }
 
