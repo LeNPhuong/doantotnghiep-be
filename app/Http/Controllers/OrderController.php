@@ -150,7 +150,7 @@ class OrderController extends BaseController
      *                 @OA\Items(
      *                     @OA\Property(property="id", type="integer", example=1, description="ID của sản phẩm"),
      *                     @OA\Property(property="quantity", type="integer", example=2, description="Số lượng sản phẩm"),
-     *                     @OA\Property(property="unit", type="string", example="1kg", description="Đơn vị sản phẩm")
+     *                     @OA\Property(property="unit", type="string", example="1", description="ID Đơn vị sản phẩm")
      *                 )
      *             ),
      *             @OA\Property(property="voucher_id", type="integer", example=1, description="ID của voucher (tuỳ chọn)")

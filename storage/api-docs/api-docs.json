@@ -4699,6 +4699,749 @@
                 ]
             }
         },
+        "/api/admin/units": {
+            "get": {
+                "tags": [
+                    "admin/unit"
+                ],
+                "summary": "Lấy danh sách đơn vị",
+                "description": "Trả về danh sách tất cả các đơn vị trong hệ thống.",
+                "operationId": "aa2694c4441a4d29ddcd9b688c288da6",
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách đơn vị thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy danh sách đơn vị thành công"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Đơn vị 1"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T12:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T12:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi lấy danh sách đơn vị",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra. Vui lòng thử lại sau."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Thông tin lỗi hệ thống"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/units/search": {
+            "get": {
+                "tags": [
+                    "admin/unit"
+                ],
+                "summary": "Tìm kiếm đơn vị",
+                "description": "Tìm kiếm đơn vị theo từ khóa nhập vào.",
+                "operationId": "b4420d233eca96498c9e8e2942290464",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Từ khóa tìm kiếm đơn vị",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Đơn vị 1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Đơn vị tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn vị tìm thấy"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Đơn vị 1"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T12:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T12:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi tìm kiếm đơn vị",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình tìm kiếm Đơn vị"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Thông tin lỗi hệ thống"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/units/edit/{id}": {
+            "get": {
+                "tags": [
+                    "admin/unit"
+                ],
+                "summary": "Lấy thông tin đơn vị",
+                "description": "Lấy thông tin chi tiết của đơn vị theo ID.",
+                "operationId": "f0c5d589f3a6a2ac588940a8b65ef399",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn vị cần lấy thông tin",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thông tin đơn vị tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy thông tin đơn vị thành công"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Đơn vị 1"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T12:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T12:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Đơn vị không tồn tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn vị không tồn tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi lấy thông tin đơn vị",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra. Vui lòng thử lại sau."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Thông tin lỗi hệ thống"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/units/update/{id}": {
+            "put": {
+                "tags": [
+                    "admin/unit"
+                ],
+                "summary": "Cập nhật thông tin đơn vị",
+                "description": "Cập nhật thông tin đơn vị dựa trên ID.",
+                "operationId": "e844ef927c40ae8500c835237cda6269",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn vị cần cập nhật",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dữ liệu cần cập nhật cho đơn vị",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "active"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Tên đơn vị",
+                                        "type": "string",
+                                        "maxLength": 191
+                                    },
+                                    "active": {
+                                        "description": "Trạng thái hoạt động",
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật đơn vị thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID của đơn vị",
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "description": "Tên đơn vị",
+                                                    "type": "string"
+                                                },
+                                                "active": {
+                                                    "description": "Trạng thái hoạt động",
+                                                    "type": "boolean"
+                                                },
+                                                "created_at": {
+                                                    "description": "Thời gian tạo",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Thời gian cập nhật",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cập nhật đơn vị thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Đơn vị không tồn tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn vị không tồn tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi khi cập nhật đơn vị",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra khi cập nhật đơn vị."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/units/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "admin/unit"
+                ],
+                "summary": "Xóa đơn vị",
+                "description": "Xóa đơn vị dựa trên ID.",
+                "operationId": "4e23106705f03395ddf4cab5d9c415b2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn vị cần xóa",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa đơn vị thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Xóa đơn vị thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Đơn vị không tồn tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn vị không tồn tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi khi xóa đơn vị",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra khi xóa đơn vị."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/units/restore/{id}": {
+            "patch": {
+                "tags": [
+                    "admin/unit"
+                ],
+                "summary": "Khôi phục đơn vị",
+                "description": "Khôi phục đơn vị bị xóa mềm dựa trên ID.",
+                "operationId": "8df9b3dbb97595a8cd8d495b000eb785",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn vị cần khôi phục",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục đơn vị thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID của đơn vị",
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "description": "Tên đơn vị",
+                                                    "type": "string"
+                                                },
+                                                "active": {
+                                                    "description": "Trạng thái hoạt động",
+                                                    "type": "boolean"
+                                                },
+                                                "created_at": {
+                                                    "description": "Thời gian tạo",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Thời gian cập nhật",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "deleted_at": {
+                                                    "description": "Thời gian xóa mềm",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Khôi phục đơn vị thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Đơn vị không cần khôi phục vì chưa bị xóa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn vị không cần khôi phục vì chưa bị xóa."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Đơn vị không tồn tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn vị không tồn tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi khi khôi phục đơn vị",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra khi khôi phục đơn vị."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/units/create": {
+            "post": {
+                "tags": [
+                    "admin/unit"
+                ],
+                "summary": "Create a new unit",
+                "operationId": "7a76ca17b802a4991fb447c833aff387",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "The name of the unit",
+                                        "type": "string",
+                                        "maxLength": 191
+                                    },
+                                    "description": {
+                                        "description": "A description of the unit",
+                                        "type": "string",
+                                        "maxLength": 500
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Unit created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "The ID of the unit",
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "description": "The name of the unit",
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "description": "A description of the unit",
+                                                    "type": "string"
+                                                },
+                                                "created_at": {
+                                                    "description": "Creation date of the unit",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Last update date of the unit",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tạo đơn vị thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred while creating the unit",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra khi tạo đơn vị."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/admin/dashboard": {
             "get": {
                 "tags": [
@@ -5873,9 +6616,9 @@
                                                     "example": 2
                                                 },
                                                 "unit": {
-                                                    "description": "Đơn vị sản phẩm",
+                                                    "description": "ID Đơn vị sản phẩm",
                                                     "type": "string",
-                                                    "example": "1kg"
+                                                    "example": "1"
                                                 }
                                             },
                                             "type": "object"
@@ -7962,6 +8705,10 @@
         {
             "name": "admin/status",
             "description": "admin/status"
+        },
+        {
+            "name": "admin/unit",
+            "description": "admin/unit"
         },
         {
             "name": "admin/dashboard",
