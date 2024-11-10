@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
-class category_unit extends Model
+class Category_unit extends Model
 {
     use HasFactory, SoftDeletes, Searchable;
 

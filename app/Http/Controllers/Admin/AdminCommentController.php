@@ -70,6 +70,10 @@ class AdminCommentController extends BaseController
 
             $comment = Comment::search($inputSearch)->get();
 
+            if($comment->isEmpty()){
+                return $this->sendResponse($comment, 'Không tìm thấy bình luận');
+            }
+
             return $this->sendResponse($comment, 'Bình luận tìm thấy');
         } catch (\Throwable $th) {
             return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm bình luận', ['error' => $th->getMessage()], 500);

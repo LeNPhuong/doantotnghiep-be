@@ -143,21 +143,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     
     // List danh mục
     Route::get('admin/categories',[AdminCategoryController::class, 'index']);
-    
-    // Thêm danh mục
     Route::post('admin/category/create', [AdminCategoryController::class, 'create']);
-
-    // Chi tiết danh mục
     Route::get('admin/category/{id}',[AdminCategoryController::class, 'show']);
-
-    // Cập nhật danh mục sản phẩm
     Route::get('admin/category/{id}/edit',[AdminCategoryController::class, 'edit']);
     Route::put('admin/category/{id}/update', [AdminCategoryController::class, 'update']);
-    
-    // Tìm kiếm danh mục 
-    Route::get('admin/category/search',[AdminCategoryController::class, 'search']);
-    
-    // Xóa mềm danh mục
+    Route::get('admin/categories/search',[AdminCategoryController::class, 'search']);
     Route::delete('admin/category/{id}/soft-delete', [AdminCategoryController::class, 'softDelete']);
     Route::patch('admin/category/{id}/restore', [AdminCategoryController::class, 'restore']);
     
@@ -191,6 +181,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     
     // Quản lý comment
     Route::get('admin/comments/{id}',[AdminCommentController::class, 'index']);
+    Route::get('admin/comments/search',[AdminCommentController::class, 'search']);
     Route::delete('admin/comments/delete/{id}',[AdminCommentController::class, 'delete']);
     Route::post('admin/comments/restore/{id}',[AdminCommentController::class, 'restore']);
     

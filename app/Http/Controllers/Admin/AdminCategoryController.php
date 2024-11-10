@@ -393,6 +393,10 @@ class AdminCategoryController extends BaseController
 
             $category = Category::search($inputSearch)->get();
 
+            if($category->isEmpty()){
+                return $this->sendResponse($category, 'Không tìm thấy danh mục');
+            }
+
             return $this->sendResponse($category, 'Danh mục tìm thấy');
         } catch (\Throwable $th) {
             return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm danh mục', ['error' => $th->getMessage()], 500);
