@@ -146,7 +146,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/user/{id}/edit', [AdminUserController::class, 'edit']);
     Route::put('admin/user/{id}/update',[AdminUserController::class, 'update']);
     Route::delete('admin/user/{id}/delete',[AdminUserController::class, 'softDelete']);
-    Route::post('admin/user/{id}/restore',[AdminUserController::class, 'restore']);
+    Route::patch('admin/user/{id}/restore',[AdminUserController::class, 'restore']);
     Route::post('admin/user/create',[AdminUserController::class, 'create']);
 
     // Quản lý đơn vị 

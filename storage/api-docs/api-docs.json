@@ -5442,6 +5442,900 @@
                 ]
             }
         },
+        "/api/admin/users": {
+            "get": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Lấy danh sách người dùng với thông tin phân loại và số người dùng mới trong tuần",
+                "operationId": "895101ef1a579f1e11fb7d2ffac04d5b",
+                "parameters": [
+                    {
+                        "name": "role",
+                        "in": "query",
+                        "description": "Lọc người dùng theo vai trò (tùy chọn)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "user",
+                            "enum": [
+                                "user",
+                                "admin"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lấy thành công thống kê và danh sách người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_users": {
+                                            "description": "Tổng số người dùng",
+                                            "type": "integer"
+                                        },
+                                        "total_user_role": {
+                                            "description": "Tổng số người dùng có vai trò 'user'",
+                                            "type": "integer"
+                                        },
+                                        "total_admin_role": {
+                                            "description": "Tổng số người dùng có vai trò 'admin'",
+                                            "type": "integer"
+                                        },
+                                        "total_new_users_this_week": {
+                                            "description": "Tổng số người dùng mới trong tuần qua",
+                                            "type": "integer"
+                                        },
+                                        "users": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "ID của người dùng",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Tên của người dùng",
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "description": "Địa chỉ email của người dùng",
+                                                        "type": "string"
+                                                    },
+                                                    "role": {
+                                                        "description": "Vai trò của người dùng",
+                                                        "type": "string"
+                                                    },
+                                                    "created_at": {
+                                                        "description": "Ngày tạo người dùng",
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "description": "Ngày cập nhật người dùng",
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy người dùng hoặc có lỗi khi lấy dữ liệu",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/{id}": {
+            "get": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Lấy thông tin chi tiết của người dùng theo ID",
+                "operationId": "06b5a56aaf86701dc77bbcb654ba2dbf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của người dùng cần truy xuất",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Truy xuất người dùng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "ID của người dùng",
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "description": "Tên của người dùng",
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "description": "Địa chỉ email của người dùng",
+                                            "type": "string"
+                                        },
+                                        "role": {
+                                            "description": "Vai trò của người dùng",
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "description": "Ngày tạo người dùng",
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "description": "Ngày cập nhật người dùng",
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Người dùng không tồn tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Người dùng không tồn tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/{id}/edit": {
+            "get": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Truy xuất thông tin người dùng để chỉnh sửa theo ID",
+                "operationId": "bb9b3e7e576bafb30c9608003a252de1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của người dùng cần chỉnh sửa",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Truy xuất thông tin người dùng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "ID của người dùng",
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "description": "Tên của người dùng",
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "description": "Địa chỉ email của người dùng",
+                                            "type": "string"
+                                        },
+                                        "role": {
+                                            "description": "Vai trò của người dùng",
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "description": "Ngày tạo người dùng",
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "description": "Ngày cập nhật người dùng",
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Người dùng không tồn tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Người dùng không tồn tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/{id}/update": {
+            "put": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Cập nhật thông tin người dùng theo ID",
+                "operationId": "8c031ac29d8fe60811b82b985a7861dc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của người dùng cần cập nhật",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dữ liệu cần cập nhật của người dùng",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "phone": {
+                                        "description": "Số điện thoại của người dùng",
+                                        "type": "string",
+                                        "maxLength": 20
+                                    },
+                                    "name": {
+                                        "description": "Tên của người dùng",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "description": "Địa chỉ email của người dùng",
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "role": {
+                                        "description": "Vai trò của người dùng (user hoặc admin)",
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "admin"
+                                        ]
+                                    },
+                                    "avatar": {
+                                        "description": "Đường dẫn đến avatar của người dùng",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "active": {
+                                        "description": "Trạng thái hoạt động của người dùng (true hoặc false)",
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật người dùng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "ID của người dùng",
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "description": "Tên của người dùng",
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "description": "Địa chỉ email của người dùng",
+                                            "type": "string"
+                                        },
+                                        "role": {
+                                            "description": "Vai trò của người dùng",
+                                            "type": "string"
+                                        },
+                                        "phone": {
+                                            "description": "Số điện thoại của người dùng",
+                                            "type": "string"
+                                        },
+                                        "avatar": {
+                                            "description": "Đường dẫn đến avatar của người dùng",
+                                            "type": "string"
+                                        },
+                                        "active": {
+                                            "description": "Trạng thái hoạt động của người dùng",
+                                            "type": "boolean"
+                                        },
+                                        "created_at": {
+                                            "description": "Ngày tạo người dùng",
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "description": "Ngày cập nhật người dùng",
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy người dùng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dữ liệu không hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "object",
+                                            "additionalProperties": []
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Có lỗi xảy ra khi cập nhật người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra. Vui lòng thử lại sau."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/search": {
+            "get": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Tìm kiếm người dùng theo từ khóa",
+                "operationId": "3ffa51c285fb9496359d3946ccaf77cc",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Từ khóa để tìm kiếm người dùng",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "John Doe"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Danh sách người dùng tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "ID của người dùng",
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "description": "Tên người dùng",
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "description": "Địa chỉ email người dùng",
+                                                "type": "string"
+                                            },
+                                            "role": {
+                                                "description": "Vai trò người dùng",
+                                                "type": "string"
+                                            },
+                                            "phone": {
+                                                "description": "Số điện thoại của người dùng",
+                                                "type": "string"
+                                            },
+                                            "avatar": {
+                                                "description": "Đường dẫn tới avatar của người dùng",
+                                                "type": "string"
+                                            },
+                                            "active": {
+                                                "description": "Trạng thái hoạt động của người dùng",
+                                                "type": "boolean"
+                                            },
+                                            "created_at": {
+                                                "description": "Ngày tạo người dùng",
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "description": "Ngày cập nhật người dùng",
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi khi tìm kiếm người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình tìm kiếm Người dùng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/{id}/delete": {
+            "delete": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Xóa mềm người dùng",
+                "operationId": "8e5f4ba3eb7aec237e649ee2bd05b30c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của người dùng cần xóa",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Người dùng đã được xóa mềm thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Người dùng đã được xóa mềm thành công."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy Người dùng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi trong quá trình xóa người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình xóa người dùng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/{id}/restore": {
+            "patch": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Khôi phục người dùng đã bị xóa mềm",
+                "operationId": "7ba665652fd2c4c92ed43fd05f43d2e7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của người dùng cần khôi phục",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Người dùng đã được khôi phục thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Người dùng đã được khôi phục thành công."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Nguyễn Văn A"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "nguyen@viana.com"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "0123456789"
+                                                },
+                                                "avatar": {
+                                                    "type": "string",
+                                                    "example": "avatar.jpg"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-01T00:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-01T00:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy người dùng đã xóa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy Người dùng đã xóa."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi trong quá trình khôi phục người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình khôi phục người dùng."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/create": {
+            "post": {
+                "tags": [
+                    "admin/user"
+                ],
+                "summary": "Tạo người dùng mới",
+                "operationId": "de5980d13b7923651d715f9d3d859f78",
+                "requestBody": {
+                    "description": "Thông tin người dùng cần tạo",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "phone",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Nguyễn Văn A"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "0123456789"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255,
+                                        "example": "nguyen@viana.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 6,
+                                        "example": "password123!"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "admin"
+                                        ],
+                                        "example": "user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tạo người dùng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tạo người dùng thành công."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Nguyễn Văn A"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "0123456789"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "nguyen@viana.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "avatar": {
+                                                    "type": "string",
+                                                    "example": "avatar.jpg"
+                                                },
+                                                "active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-01T00:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-01T00:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi định dạng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Lỗi định dạng"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Có lỗi xảy ra trong quá trình tạo người dùng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra trong quá trình tạo người dùng"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/admin/dashboard": {
             "get": {
                 "tags": [
@@ -8709,6 +9603,10 @@
         {
             "name": "admin/unit",
             "description": "admin/unit"
+        },
+        {
+            "name": "admin/user",
+            "description": "admin/user"
         },
         {
             "name": "admin/dashboard",
