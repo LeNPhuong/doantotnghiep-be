@@ -159,7 +159,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     
     // Xóa mềm danh mục
     Route::delete('admin/category/{id}/soft-delete', [AdminCategoryController::class, 'softDelete']);
-    Route::post('admin/category/{id}/restore', [AdminCategoryController::class, 'restore']);
+    Route::patch('admin/category/{id}/restore', [AdminCategoryController::class, 'restore']);
     
     // user 
     Route::get('admin/users',[AdminUserController::class, 'index']);

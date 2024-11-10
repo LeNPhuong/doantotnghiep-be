@@ -14,7 +14,8 @@ class Unit extends Model
     protected $table = 'units';
 
     protected $fillable = [
-        'name', 'active'
+        'name',
+        'active'
     ];
 
     public function toSearchableArray()
@@ -27,7 +28,8 @@ class Unit extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'category_unit', 'unit_id', 'category_id');
+        return $this->belongsToMany(Category::class, 'category_unit')
+            ->withTimestamps();
     }
 
     protected static function boot()
@@ -36,7 +38,7 @@ class Unit extends Model
 
         static::retrieved(function ($unit) {
             // Ẩn trường pivot khi lấy dữ liệu
-            $unit->makeHidden(['pivot','created_at', 'updated_at']);
+            $unit->makeHidden(['pivot', 'created_at', 'updated_at']);
         });
     }
 }

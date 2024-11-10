@@ -35,14 +35,15 @@ class Category extends Model
 
     public function units()
     {
-        return $this->belongsToMany(category_unit::class, 'category_unit', 'category_id', 'unit_id');
+        return $this->belongsToMany(Unit::class, 'category_unit')
+            ->withTimestamps();
     }
 
     public function activeUnits()
     {
         return $this->belongsToMany(Unit::class, 'category_unit')
-                    ->where('units.active', 1)
-                    ->withPivot('category_id', 'unit_id');
+            ->where('units.active', 1)
+            ->withPivot('category_id', 'unit_id');
     }
 
     protected static function boot()
