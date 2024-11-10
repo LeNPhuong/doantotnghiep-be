@@ -896,6 +896,133 @@
                 ]
             }
         },
+        "/api/admin/categories/search": {
+            "get": {
+                "tags": [
+                    "admin/category"
+                ],
+                "summary": "Tìm kiếm danh mục",
+                "description": "Tìm kiếm danh mục theo tên hoặc các thuộc tính khác của danh mục.",
+                "operationId": "e6d0a905f5421a2d2475df7bb02520bb",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Từ khóa tìm kiếm trong tên hoặc thuộc tính của danh mục.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "example search"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Danh sách danh mục tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Danh mục tìm thấy"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Danh mục A"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T10:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T10:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy danh mục",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy danh mục"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi tìm kiếm danh mục",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình tìm kiếm danh mục"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Error details"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/admin/category/{id}/soft-delete": {
             "delete": {
                 "tags": [
@@ -1575,28 +1702,29 @@
                 ]
             }
         },
-        "/api/admin/comments/search": {
+        "/api/admin/comment/search": {
             "get": {
                 "tags": [
-                    "admin/comments"
+                    "admin/comment"
                 ],
                 "summary": "Tìm kiếm bình luận",
-                "description": "Tìm kiếm bình luận theo từ khóa.",
-                "operationId": "807c89c59c21f30a7ee97484c78ca49b",
+                "description": "Tìm kiếm bình luận theo nội dung bình luận hoặc tên người dùng.",
+                "operationId": "dee52cd3e2a04631a4ec5236b45c9658",
                 "parameters": [
                     {
                         "name": "query",
                         "in": "query",
-                        "description": "Từ khóa tìm kiếm bình luận",
+                        "description": "Từ khóa tìm kiếm trong bình luận hoặc tên người dùng.",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "example search"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Bình luận tìm thấy",
+                        "description": "Danh sách bình luận tìm thấy",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1617,23 +1745,32 @@
                                                         "type": "integer",
                                                         "example": 1
                                                     },
-                                                    "content": {
+                                                    "comment": {
                                                         "type": "string",
-                                                        "example": "Bình luận ví dụ"
-                                                    },
-                                                    "user_id": {
-                                                        "type": "integer",
-                                                        "example": 123
+                                                        "example": "This is a comment"
                                                     },
                                                     "created_at": {
                                                         "type": "string",
                                                         "format": "date-time",
-                                                        "example": "2024-11-10T12:34:56"
+                                                        "example": "2024-11-10T10:00:00"
                                                     },
                                                     "updated_at": {
                                                         "type": "string",
                                                         "format": "date-time",
-                                                        "example": "2024-11-10T12:34:56"
+                                                        "example": "2024-11-10T10:00:00"
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "John Doe"
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "john@example.com"
+                                                            }
+                                                        },
+                                                        "type": "object"
                                                     }
                                                 },
                                                 "type": "object"
@@ -1645,8 +1782,31 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Không tìm thấy bình luận",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy bình luận"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
-                        "description": "Lỗi tìm kiếm bình luận",
+                        "description": "Lỗi hệ thống khi tìm kiếm bình luận",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1663,7 +1823,897 @@
                                             "properties": {
                                                 "error": {
                                                     "type": "string",
-                                                    "example": "Lỗi chi tiết"
+                                                    "example": "Error details"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders": {
+            "get": {
+                "tags": [
+                    "admin/orders"
+                ],
+                "summary": "Lấy danh sách đơn hàng",
+                "description": "Lấy danh sách đơn hàng với các bộ lọc theo ngày bắt đầu, ngày kết thúc, và trạng thái.",
+                "operationId": "de876ba5308ded6dbb715173a14d7d4d",
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "Ngày bắt đầu (yyyy-mm-dd)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-11-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "Ngày kết thúc (yyyy-mm-dd)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-11-10"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Trạng thái của đơn hàng (id của trạng thái)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Danh sách đơn hàng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy danh sách đơn hàng thành công"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 123
+                                                    },
+                                                    "status_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "voucher_id": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T10:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T10:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi xảy ra trong quá trình lấy đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Có lỗi xảy ra. Vui lòng thử lại sau."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Error details"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders/search": {
+            "get": {
+                "tags": [
+                    "admin/orders"
+                ],
+                "summary": "Tìm kiếm đơn hàng",
+                "description": "Tìm kiếm đơn hàng dựa trên mã đơn hàng hoặc tên người dùng.",
+                "operationId": "289053e251c8762ae9f7788261b10608",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Chuỗi tìm kiếm cho mã đơn hàng hoặc tên người dùng.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ORD123"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Danh sách đơn hàng tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn hàng tìm thấy"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "ORD123"
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 123
+                                                    },
+                                                    "status_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "voucher_id": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T10:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-10T10:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy đơn hàng"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi tìm kiếm",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình tìm kiếm đơn hàng"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Error details"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders/{id}": {
+            "get": {
+                "tags": [
+                    "admin/orders"
+                ],
+                "summary": "Lấy thông tin chi tiết đơn hàng",
+                "description": "Lấy thông tin chi tiết đơn hàng bao gồm người dùng, trạng thái, chi tiết đơn hàng, voucher và giao dịch.",
+                "operationId": "65ac4a26fbef4c535ba418343e9af522",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn hàng",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thông tin đơn hàng được tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn hàng tìm thấy"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "ORD123"
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "status_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "voucher_id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T10:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T10:00:00"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "john@example.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "status": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Completed"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "orderDetails": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "product": {
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Product Name"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 19.99
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "voucher": {
+                                                    "properties": {
+                                                        "code": {
+                                                            "type": "string",
+                                                            "example": "DISCOUNT10"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "transaction": {
+                                                    "properties": {
+                                                        "amount": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 39.98
+                                                        },
+                                                        "status": {
+                                                            "type": "string",
+                                                            "example": "Success"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy đơn hàng"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi tìm kiếm đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình tìm kiếm đơn hàng"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Error details"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/print/{id}": {
+            "get": {
+                "tags": [
+                    "admin/orders"
+                ],
+                "summary": "In thông tin chi tiết đơn hàng",
+                "description": "Lấy thông tin chi tiết đơn hàng bao gồm người dùng, trạng thái, chi tiết đơn hàng, voucher và giao dịch để in.",
+                "operationId": "d7a4115221e48175e5cc2ee4d468319c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn hàng cần in",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thông tin đơn hàng được tìm thấy và có thể in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn hàng tìm thấy"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "ORD123"
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "status_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "voucher_id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T10:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T10:00:00"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "john@example.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "status": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Completed"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "orderDetails": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "product": {
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Product Name"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 19.99
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "voucher": {
+                                                    "properties": {
+                                                        "code": {
+                                                            "type": "string",
+                                                            "example": "DISCOUNT10"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "transaction": {
+                                                    "properties": {
+                                                        "amount": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 39.98
+                                                        },
+                                                        "status": {
+                                                            "type": "string",
+                                                            "example": "Success"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy đơn hàng"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi tìm kiếm đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình tìm kiếm đơn hàng"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Error details"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders/confirm/{id}": {
+            "put": {
+                "tags": [
+                    "admin/orders"
+                ],
+                "summary": "Duyệt đơn hàng",
+                "description": "Xác nhận và duyệt đơn hàng. Thay đổi trạng thái đơn hàng từ 'Chờ duyệt' sang 'Đã duyệt'.",
+                "operationId": "00169a8120d3b811dad9f5a4af82b9ec",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn hàng cần duyệt",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Duyệt đơn hàng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Duyệt đơn hàng thành công"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "ORD123"
+                                                },
+                                                "status_id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T10:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-11-10T10:00:00"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "john@example.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "status": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Confirmed"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "orderDetails": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "product": {
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Product Name"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 19.99
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "voucher": {
+                                                    "properties": {
+                                                        "code": {
+                                                            "type": "string",
+                                                            "example": "DISCOUNT10"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "transaction": {
+                                                    "properties": {
+                                                        "amount": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 39.98
+                                                        },
+                                                        "status": {
+                                                            "type": "string",
+                                                            "example": "Success"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy đơn hàng"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống khi duyệt đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình duyệt đơn hàng"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Error details"
                                                 }
                                             },
                                             "type": "object"
@@ -6103,8 +7153,8 @@
             "description": "admin/comment"
         },
         {
-            "name": "admin/comments",
-            "description": "admin/comments"
+            "name": "admin/orders",
+            "description": "admin/orders"
         },
         {
             "name": "admin/products",

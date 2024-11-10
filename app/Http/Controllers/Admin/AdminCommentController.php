@@ -234,6 +234,69 @@ class AdminCommentController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/admin/comment/search",
+     *     summary="Tìm kiếm bình luận",
+     *     description="Tìm kiếm bình luận theo nội dung bình luận hoặc tên người dùng.",
+     *     tags={"admin/comment"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="query",
+     *         description="Từ khóa tìm kiếm trong bình luận hoặc tên người dùng.",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="example search"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Danh sách bình luận tìm thấy",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Bình luận tìm thấy"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="comment", type="string", example="This is a comment"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-10T10:00:00"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-10T10:00:00"),
+     *                     @OA\Property(property="user", type="object",
+     *                         @OA\Property(property="name", type="string", example="John Doe"),
+     *                         @OA\Property(property="email", type="string", example="john@example.com")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Không tìm thấy bình luận",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Không tìm thấy bình luận"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi hệ thống khi tìm kiếm bình luận",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi trong quá trình tìm kiếm bình luận"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="error", type="string", example="Error details")
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function search(Request $request)
     {
         try {
@@ -247,7 +310,7 @@ class AdminCommentController extends BaseController
                     (isset($comment->user) && strpos(strtolower($comment->user->name), needle: strtolower($inputSearch)) !== false);
             });
 
-            if($filterComment->isEmpty()){
+            if ($filterComment->isEmpty()) {
                 return $this->sendResponse($filterComment, 'Không tìm thấy bình luận');
             }
 
