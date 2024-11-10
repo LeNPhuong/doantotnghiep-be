@@ -2544,8 +2544,7 @@
                         "description": "ID của đơn hàng cần duyệt",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2570,46 +2569,38 @@
                                                     "type": "integer",
                                                     "example": 1
                                                 },
-                                                "code": {
-                                                    "type": "string",
-                                                    "example": "ORD123"
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 1
                                                 },
                                                 "status_id": {
                                                     "type": "integer",
                                                     "example": 3
                                                 },
-                                                "user_id": {
+                                                "total": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 150.75
+                                                },
+                                                "voucher_id": {
                                                     "type": "integer",
-                                                    "example": 123
+                                                    "example": 1
                                                 },
                                                 "created_at": {
                                                     "type": "string",
                                                     "format": "date-time",
-                                                    "example": "2024-11-10T10:00:00"
+                                                    "example": "2024-11-10T12:00:00"
                                                 },
                                                 "updated_at": {
                                                     "type": "string",
                                                     "format": "date-time",
-                                                    "example": "2024-11-10T10:00:00"
-                                                },
-                                                "user": {
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string",
-                                                            "example": "John Doe"
-                                                        },
-                                                        "email": {
-                                                            "type": "string",
-                                                            "example": "john@example.com"
-                                                        }
-                                                    },
-                                                    "type": "object"
+                                                    "example": "2024-11-10T12:00:00"
                                                 },
                                                 "status": {
                                                     "properties": {
-                                                        "name": {
+                                                        "text_status": {
                                                             "type": "string",
-                                                            "example": "Confirmed"
+                                                            "example": "Đã duyệt"
                                                         }
                                                     },
                                                     "type": "object"
@@ -2622,7 +2613,7 @@
                                                                 "properties": {
                                                                     "name": {
                                                                         "type": "string",
-                                                                        "example": "Product Name"
+                                                                        "example": "Sản phẩm 1"
                                                                     }
                                                                 },
                                                                 "type": "object"
@@ -2634,37 +2625,34 @@
                                                             "price": {
                                                                 "type": "number",
                                                                 "format": "float",
-                                                                "example": 19.99
+                                                                "example": 75.5
                                                             }
                                                         },
                                                         "type": "object"
                                                     }
-                                                },
-                                                "voucher": {
-                                                    "properties": {
-                                                        "code": {
-                                                            "type": "string",
-                                                            "example": "DISCOUNT10"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "transaction": {
-                                                    "properties": {
-                                                        "amount": {
-                                                            "type": "number",
-                                                            "format": "float",
-                                                            "example": 39.98
-                                                        },
-                                                        "status": {
-                                                            "type": "string",
-                                                            "example": "Success"
-                                                        }
-                                                    },
-                                                    "type": "object"
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Trạng thái đơn hàng không hợp lệ hoặc đơn hàng không thể duyệt",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn hàng chưa thanh toán"
                                         }
                                     },
                                     "type": "object"
@@ -2685,9 +2673,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Không tìm thấy đơn hàng"
-                                        },
-                                        "data": {
-                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2708,15 +2693,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Đã xảy ra lỗi trong quá trình duyệt đơn hàng"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "error": {
-                                                    "type": "string",
-                                                    "example": "Error details"
-                                                }
-                                            },
-                                            "type": "object"
                                         }
                                     },
                                     "type": "object"

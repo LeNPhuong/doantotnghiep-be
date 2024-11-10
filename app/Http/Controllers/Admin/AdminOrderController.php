@@ -406,12 +406,9 @@ class AdminOrderController extends BaseController
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="ID của đơn hàng cần duyệt",
      *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             example=1
-     *         )
+     *         description="ID của đơn hàng cần duyệt",
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -420,38 +417,41 @@ class AdminOrderController extends BaseController
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Duyệt đơn hàng thành công"),
-     *             @OA\Property(property="data", type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="code", type="string", example="ORD123"),
+     *                 @OA\Property(property="user_id", type="integer", example=1),
      *                 @OA\Property(property="status_id", type="integer", example=3),
-     *                 @OA\Property(property="user_id", type="integer", example=123),
-     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-10T10:00:00"),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-10T10:00:00"),
-     *                 @OA\Property(property="user", type="object",
-     *                     @OA\Property(property="name", type="string", example="John Doe"),
-     *                     @OA\Property(property="email", type="string", example="john@example.com")
+     *                 @OA\Property(property="total", type="number", format="float", example=150.75),
+     *                 @OA\Property(property="voucher_id", type="integer", example=1),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-10T12:00:00"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-11-10T12:00:00"),
+     *                 @OA\Property(property="status", type="object", 
+     *                     @OA\Property(property="text_status", type="string", example="Đã duyệt")
      *                 ),
-     *                 @OA\Property(property="status", type="object",
-     *                     @OA\Property(property="name", type="string", example="Confirmed")
-     *                 ),
-     *                 @OA\Property(property="orderDetails", type="array",
+     *                 @OA\Property(
+     *                     property="orderDetails",
+     *                     type="array",
      *                     @OA\Items(
      *                         type="object",
-     *                         @OA\Property(property="product", type="object",
-     *                             @OA\Property(property="name", type="string", example="Product Name")
+     *                         @OA\Property(property="product", type="object", 
+     *                             @OA\Property(property="name", type="string", example="Sản phẩm 1")
      *                         ),
      *                         @OA\Property(property="quantity", type="integer", example=2),
-     *                         @OA\Property(property="price", type="number", format="float", example=19.99)
+     *                         @OA\Property(property="price", type="number", format="float", example=75.50)
      *                     )
-     *                 ),
-     *                 @OA\Property(property="voucher", type="object",
-     *                     @OA\Property(property="code", type="string", example="DISCOUNT10")
-     *                 ),
-     *                 @OA\Property(property="transaction", type="object",
-     *                     @OA\Property(property="amount", type="number", format="float", example=39.98),
-     *                     @OA\Property(property="status", type="string", example="Success")
      *                 )
      *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Trạng thái đơn hàng không hợp lệ hoặc đơn hàng không thể duyệt",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Đơn hàng chưa thanh toán")
      *         )
      *     ),
      *     @OA\Response(
@@ -460,8 +460,7 @@ class AdminOrderController extends BaseController
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Không tìm thấy đơn hàng"),
-     *             @OA\Property(property="data", type="object")
+     *             @OA\Property(property="message", type="string", example="Không tìm thấy đơn hàng")
      *         )
      *     ),
      *     @OA\Response(
@@ -470,10 +469,7 @@ class AdminOrderController extends BaseController
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi trong quá trình duyệt đơn hàng"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="error", type="string", example="Error details")
-     *             )
+     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi trong quá trình duyệt đơn hàng")
      *         )
      *     )
      * )
@@ -482,17 +478,17 @@ class AdminOrderController extends BaseController
     {
         try {
             $order = Order::with(['user', 'status', 'orderDetails.product', 'voucher', 'transaction'])->findOrFail($id);
-            if(!$order){
+            if (!$order) {
                 return $this->sendError('Không tìm thấy đơn hàng', [], 404);
-            }else if($order->status->text_status == 'Chưa thanh toán'){
+            } else if ($order->status->text_status == 'Chưa thanh toán') {
                 return $this->sendError('Đơn hàng chưa thanh toán', [], 400);
-            }else if($order->status->text_status == 'Đang giao'){
+            } else if ($order->status->text_status == 'Đang giao') {
                 return $this->sendError('Đơn hàng đang giao', [], 400);
-            }else if($order->status->text_status == 'Đã giao'){
+            } else if ($order->status->text_status == 'Đã giao') {
                 return $this->sendError('Đơn đã giao', [], 400);
-            }else if($order->status->text_status == 'Đã hủy'){
+            } else if ($order->status->text_status == 'Đã hủy') {
                 return $this->sendError('Đơn hàng đã hủy', [], 400);
-            }else if($order->status->text_status == 'Trả hàng'){
+            } else if ($order->status->text_status == 'Trả hàng') {
                 return $this->sendError('Đơn hàng đã trả hàng', [], 400);
             }
 
