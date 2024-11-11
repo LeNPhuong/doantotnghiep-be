@@ -470,7 +470,7 @@ class OrderController extends BaseController
             return $this->sendError('Lỗi định dạng', $validator->errors(), 400);
         }
 
-        $order = Order::with(['status', 'orderDetails.product', 'user.addresses', 'voucher'])->where('code', $request->code)->first();
+        $order = Order::with(['status', 'orderDetails.product', 'user.addresses', 'voucher','transaction'])->where('code', $request->code)->first();
 
         if (!$order) {
             return $this->sendError('Không tìm thấy đơn hàng.', '', 404);
