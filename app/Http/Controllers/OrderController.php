@@ -529,7 +529,6 @@ class OrderController extends BaseController
     {
         // Lấy đơn hàng và kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
         $order = Order::where('id', $orderId)->where('user_id', auth()->user()->id)->first();
-
         if (!$order) {
             return $this->sendError('Không tìm thấy đơn hàng hoặc bạn không có quyền hủy đơn hàng này.', [], 404);
         }
@@ -547,7 +546,7 @@ class OrderController extends BaseController
         $order = Order::findOrFail($orderId);
 
         // Kiểm tra trạng thái đơn hàng có thể hủy không (trạng thái phải lớn hơn 2)
-        if ($order->status->id <= 2) {
+        if ($order->status->id < 2) {
             return $this->sendError('Đơn hàng không thể hủy vì trạng thái của nó không hợp lệ.');
         }
 
