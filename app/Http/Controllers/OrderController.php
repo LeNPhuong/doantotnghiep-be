@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class OrderController extends BaseController
     public function getOrders()
     {
         // Lấy danh sách đơn hàng của người dùng, bao gồm thông tin về status
-        $orders = Order::with(['status', 'orderDetails.product'])->get();
+        $orders = Order::with(['status', 'orderDetails.product', 'transaction'])->get();
         // Kiểm tra nếu không có đơn hàng nào
         if ($orders->isEmpty()) {
             return $this->sendError('Không có đơn hàng nào!', '', 404);
@@ -133,6 +134,15 @@ class OrderController extends BaseController
         if ($orderDetails->isEmpty()) {
             return $this->sendError('Đơn hàng không tồn tại hoặc không có chi tiết!', '', 404);
         }
+
+        // Lấy thông tin payment_method từ bảng transactions
+        $paymentMethod = Transaction::where('order_id', $orderId)->value('payment_method');
+
+        // Thêm field `payment_method` vào từng chi tiết đơn hàng
+        $orderDetails = $orderDetails->map(function ($detail) use ($paymentMethod) {
+            $detail->payment_method = $paymentMethod;
+            return $detail;
+        });
 
         return $this->sendResponse($orderDetails, 'Chi tiết đơn hàng.');
     }
