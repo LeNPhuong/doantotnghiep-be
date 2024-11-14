@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('phone', 20);
+            $table->string('phone', 20)->nullable();
             $table->string('avatar', 255)->nullable();
             $table->tinyInteger('active')->default(1);
             $table->string('email')->unique();
@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['user', 'admin'])->default('user');
             $table->date('birthday')->nullable();
+            $table->string('google_id')->nullable()->unique();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
