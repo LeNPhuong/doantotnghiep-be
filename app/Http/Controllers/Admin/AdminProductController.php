@@ -54,16 +54,19 @@ class AdminProductController extends BaseController
     {
         try {
             $products = Cache::remember('active_products', 60, function () {
-                return Product::orderBy('created_at', 'desc')->get();
+                return Product::withTrashed()->orderBy('created_at', 'desc')->get();
             });
+
             if ($products->isEmpty()) {
                 return $this->sendResponse($products, 'Chưa có sản phẩm');
             }
+
             return $this->sendResponse($products, 'Lấy sản phẩm thành công');
         } catch (\Throwable $th) {
             return $this->sendError('Lỗi trong quá trình lấy sản phẩm', ['error' => $th->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Get(
@@ -335,7 +338,7 @@ class AdminProductController extends BaseController
             ]);
 
             // Loại bỏ các trường không có trong request để giữ nguyên giá trị cũ
-            $dataToUpdate = array_filter($validatedData, fn ($value) => !is_null($value));
+            $dataToUpdate = array_filter($validatedData, fn($value) => !is_null($value));
 
             // Xóa ảnh cũ và upload ảnh mới nếu có
             if ($request->hasFile('img')) {

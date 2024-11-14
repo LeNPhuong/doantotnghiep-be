@@ -78,8 +78,8 @@ class AdminCommentController extends BaseController
     public function index($id)
     {
         try {
-            // Tìm sản phẩm cùng với các bình luận
-            $product = Product::with('comments')->findOrFail($id);
+            // Tìm sản phẩm bao gồm cả các sản phẩm đã bị xóa mềm cùng với các bình luận
+            $product = Product::withTrashed()->with('comments')->findOrFail($id);
 
             // Kiểm tra nếu sản phẩm không có bình luận
             if ($product->comments->isEmpty()) {
@@ -96,6 +96,7 @@ class AdminCommentController extends BaseController
             return $this->sendError('Có lỗi xảy ra. Vui lòng thử lại sau.', ['error' => $e->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Delete(

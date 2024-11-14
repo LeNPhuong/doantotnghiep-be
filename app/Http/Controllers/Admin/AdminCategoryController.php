@@ -73,7 +73,7 @@ class AdminCategoryController extends BaseController
     public function index()
     {
         try {
-            $category = Category::all();
+            $category = Category::withTrashed()->get();
             if ($category->isEmpty()) {
                 return $this->sendResponse($category, 'Chưa có danh mục sản phẩm');
             }

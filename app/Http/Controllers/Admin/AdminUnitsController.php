@@ -52,7 +52,7 @@ class AdminUnitsController extends BaseController
     public function index()
     {
         try {
-            $units = Unit::all();
+            $units = Unit::withTrashed()->get();
             return $this->sendResponse($units, 'Lấy danh sách đơn vị thành công');
         } catch (\Exception $th) {
             return $this->sendError('Có lỗi xảy ra. Vui lòng thử lại sau.', ['error' => $th->getMessage()], 500);

@@ -120,6 +120,8 @@ Route::post('/test', [PaymentController::class, 'test']);
 Route::middleware(['auth:api', 'admin'])->group(function () {
 
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
+
+    // Product
     Route::get('admin/products',[AdminProductController::class, 'index']);
     Route::get('admin/product/search',[AdminProductController::class, 'search']);
     Route::get('admin/product/{id}',[AdminProductController::class, 'show']);

@@ -87,9 +87,10 @@ class AdminOrderController extends BaseController
             // Lấy giá trị từ input
             $startDate = $request->input('start_date'); // dạng yyyy-mm-dd 
             $endDate = $request->input('end_date');
-            $status = $request->input('status'); // nhận id của status nha
+            $status = $request->input('status'); // nhận id của status
 
-            $query = Order::with(['user', 'status', 'voucher', 'orderDetails', 'transaction']); // Gọi các quan hệ liên quan
+            // Khởi tạo truy vấn và gọi các quan hệ liên quan
+            $query = Order::withTrashed()->with(['user', 'status', 'voucher', 'orderDetails', 'transaction']);
 
             // Lọc theo ngày bắt đầu
             if ($startDate) {
@@ -114,6 +115,7 @@ class AdminOrderController extends BaseController
             return $this->sendError('Có lỗi xảy ra. Vui lòng thử lại sau.', ['error' => $e->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Get(

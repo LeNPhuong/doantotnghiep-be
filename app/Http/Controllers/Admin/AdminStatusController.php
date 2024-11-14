@@ -51,12 +51,13 @@ class AdminStatusController extends BaseController
     public function index()
     {
         try {
-            $Status = Status::all();
+            $Status = Status::withTrashed()->get();
             return $this->sendResponse($Status, 'Lấy danh sách trạng thái thành công');
         } catch (\Exception $th) {
             return $this->sendError('Có lỗi xảy ra. Vui lòng thử lại sau.', ['error' => $th->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Get(
@@ -110,7 +111,7 @@ class AdminStatusController extends BaseController
             $inputSearch = $request->input('query');
 
             $Status = Status::search($inputSearch)->get();
-            if($Status->isEmpty()){
+            if ($Status->isEmpty()) {
                 return $this->sendError('Không tìm thấy trạng thái', [], 404);
             }
             return $this->sendResponse($Status, 'trạng thái tìm thấy');

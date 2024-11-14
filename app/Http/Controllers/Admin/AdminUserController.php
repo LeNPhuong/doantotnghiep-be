@@ -62,15 +62,20 @@ class AdminUserController extends BaseController
     {
         try {
             $users = $this->filterUsersByRole($request);
-            $totalUsers = $users->count();
-            $totalUserRole = $users->where('role', 'user')->count();
-            $totalAdminRole = $users->where('role', 'admin')->count();
+
+            // Tính tổng số lượng người dùng và theo từng vai trò
+            $totalUsers = (clone $users)->count();
+            $totalUserRole = (clone $users)->where('role', 'user')->count();
+            $totalAdminRole = (clone $users)->where('role', 'admin')->count();
 
             // Tính tổng số người dùng mới trong tuần
             $oneWeekAgo = Carbon::now()->subWeek();
-            $totalNewUsersThisWeek = $users->where('created_at', '>=', $oneWeekAgo)->count();
+            $totalNewUsersThisWeek = (clone $users)->where('created_at', '>=', $oneWeekAgo)->count();
 
-            if ($users->isEmpty()) {
+            // Lấy danh sách người dùng
+            $userList = $users->get();
+
+            if ($userList->isEmpty()) {
                 return $this->sendResponse([
                     'total_users' => $totalUsers,
                     'total_user_role' => $totalUserRole,
@@ -84,12 +89,13 @@ class AdminUserController extends BaseController
                 'total_user_role' => $totalUserRole,
                 'total_admin_role' => $totalAdminRole,
                 'total_new_users_this_week' => $totalNewUsersThisWeek,
-                'users' => $users
+                'users' => $userList
             ], 'Lấy người dùng thành công');
         } catch (\Throwable $th) {
             return $this->sendError('Lỗi định dạng.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     private function filterUsersByRole(Request $request)
     {
