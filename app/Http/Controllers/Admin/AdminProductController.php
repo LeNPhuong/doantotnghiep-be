@@ -339,11 +339,11 @@ class AdminProductController extends BaseController
 
             // Xóa ảnh cũ và upload ảnh mới nếu có
             if ($request->hasFile('img')) {
+
                 // Xóa ảnh cũ trên Cloudinary
                 if ($product->img_public_id) {
                     Cloudinary::destroy($product->img_public_id);
                 }
-
                 // Upload ảnh mới lên Cloudinary
                 $uploadedFile = Cloudinary::upload($request->file('img')->getRealPath());
                 $dataToUpdate['img'] = $uploadedFile->getSecurePath(); // Cập nhật URL ảnh mới
