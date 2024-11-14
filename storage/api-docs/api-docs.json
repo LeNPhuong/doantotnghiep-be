@@ -9208,10 +9208,10 @@
                     "auth"
                 ],
                 "summary": "Cập nhật thông tin người dùng",
-                "description": "Cập nhật thông tin người dùng, bao gồm tên, số điện thoại, email và avatar.",
-                "operationId": "update",
+                "description": "Cập nhật thông tin người dùng bao gồm tên, số điện thoại, email và avatar. Các thông tin không bắt buộc nhập nếu đã tồn tại.",
+                "operationId": "updateProfile",
                 "requestBody": {
-                    "required": true,
+                    "required": false,
                     "content": {
                         "multipart/form-data": {
                             "schema": {
@@ -9219,23 +9219,23 @@
                                     "name": {
                                         "description": "Tên người dùng",
                                         "type": "string",
-                                        "minLength": 1,
-                                        "example": "Nguyễn Văn A"
+                                        "example": "Nguyễn Văn A",
+                                        "nullable": true
                                     },
                                     "phone": {
                                         "description": "Số điện thoại người dùng",
                                         "type": "string",
-                                        "minLength": 1,
-                                        "example": "0123456789"
+                                        "example": "0123456789",
+                                        "nullable": true
                                     },
                                     "email": {
                                         "description": "Địa chỉ email người dùng",
                                         "type": "string",
-                                        "minLength": 1,
-                                        "example": "example@example.com"
+                                        "example": "example@example.com",
+                                        "nullable": true
                                     },
                                     "avatar": {
-                                        "description": "Tải lên hình ảnh avatar (bắt buộc nếu có)",
+                                        "description": "Upload ảnh đại diện của người dùng",
                                         "type": "string",
                                         "format": "binary",
                                         "nullable": true
@@ -9253,25 +9253,38 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "example": 1
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "name": {
-                                            "type": "string",
-                                            "example": "Nguyễn Văn A"
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Nguyễn Văn A"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "0123456789"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "example@example.com"
+                                                },
+                                                "avatar": {
+                                                    "type": "string",
+                                                    "example": "http://example.com/avatar.jpg"
+                                                }
+                                            },
+                                            "type": "object"
                                         },
-                                        "phone": {
+                                        "message": {
                                             "type": "string",
-                                            "example": "0123456789"
-                                        },
-                                        "email": {
-                                            "type": "string",
-                                            "example": "example@example.com"
-                                        },
-                                        "avatar": {
-                                            "type": "string",
-                                            "example": "http://example.com/avatar.jpg"
+                                            "example": "Thay đổi thông tin tài khoản thành công."
                                         }
                                     },
                                     "type": "object"
@@ -9290,7 +9303,15 @@
                                             "example": "Lỗi định dạng"
                                         },
                                         "messages": {
-                                            "type": "object"
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "Email đã tồn tại."
+                                                ],
+                                                "phone": [
+                                                    "Số điện thoại không hợp lệ."
+                                                ]
+                                            }
                                         }
                                     },
                                     "type": "object"
