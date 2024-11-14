@@ -150,15 +150,22 @@ class AdminCommentController extends BaseController
     public function delete($id)
     {
         try {
-            $comments = Comment::find($id);
+            // Tìm bình luận theo ID
+            $comment = Comment::findOrFail($id);
 
-            $comments->delete();
+            // Cập nhật thuộc tính active về 0 trước khi xóa
+            $comment->active = 0;
+            $comment->save();  // Lưu thay đổi
 
-            return $this->sendResponse(null, 'Bình luận đã được xóa mềm thành công.');
+            // Xóa mềm bình luận
+            $comment->delete();
+
+            return $this->sendResponse(null, 'Bình luận đã được xóa mềm và trạng thái active đã được chuyển về 0 thành công.');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy bình luận.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Patch(
@@ -220,16 +227,17 @@ class AdminCommentController extends BaseController
     public function restore($id)
     {
         try {
-            $comments = Comment::onlyTrashed()->findOrFail($id);
+            // Tìm bình luận đã bị xóa mềm
+            $comment = Comment::onlyTrashed()->findOrFail($id);
 
-            if (!$comments) {
-                return $this->sendError('Không tìm thấy bình luận', [], 404);
-            }
+            // Khôi phục bình luận
+            $comment->restore();
 
-            $comments->restore();
+            // Cập nhật thuộc tính active về 1 sau khi khôi phục
+            $comment->active = 1;
+            $comment->save();  // Lưu thay đổi
 
-
-            return $this->sendResponse($comments, 'Bình luận đã được khôi phục thành công.');
+            return $this->sendResponse($comment, 'Bình luận đã được khôi phục và chuyển trạng thái active về 1 thành công.');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy bình luận đã xóa.', ['error' => $th->getMessage()], 404);
         }
@@ -303,7 +311,7 @@ class AdminCommentController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $comment = comment::with('user')->get();
+            $comment = comment::withTrashed()->with('user')->get();
 
             // Tìm kiếm trong 'code' của đơn hàng và 'name' của người dùng
             $filterComment = $comment->filter(function ($comment) use ($inputSearch) {

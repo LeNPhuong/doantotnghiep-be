@@ -110,7 +110,7 @@ class AdminStatusController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $Status = Status::search($inputSearch)->get();
+            $Status = Status::withTrashed()->search($inputSearch)->get();
             if ($Status->isEmpty()) {
                 return $this->sendError('Không tìm thấy trạng thái', [], 404);
             }
@@ -312,15 +312,22 @@ class AdminStatusController extends BaseController
     {
         try {
             $unit = Status::findOrFail($id);
+
+            // Chuyển trạng thái active về 0 trước khi xóa (nếu cần)
+            $unit->active = 0; // Giả sử bạn muốn chuyển active thành 0
+            $unit->save(); // Lưu thay đổi
+
+            // Xóa trạng thái
             $unit->delete();
 
             return $this->sendResponse(null, 'Xóa trạng thái thành công');
         } catch (ModelNotFoundException $e) {
-            return $this->sendError('trạng thái không tồn tại', [], 404);
+            return $this->sendError('Trạng thái không tồn tại', [], 404);
         } catch (\Exception $th) {
             return $this->sendError('Có lỗi xảy ra khi xóa trạng thái.', ['error' => $th->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Patch(
@@ -389,17 +396,24 @@ class AdminStatusController extends BaseController
             $unit = Status::withTrashed()->findOrFail($id);
 
             if ($unit->trashed()) {
+                // Chuyển trạng thái `active` về 1 trước khi khôi phục (nếu cần)
+                $unit->active = 1;
+                $unit->save();
+
+                // Khôi phục trạng thái
                 $unit->restore();
+
                 return $this->sendResponse($unit, 'Khôi phục trạng thái thành công');
             }
 
-            return $this->sendError('trạng thái không cần khôi phục vì chưa bị xóa.', [], 400);
+            return $this->sendError('Trạng thái không cần khôi phục vì chưa bị xóa.', [], 400);
         } catch (ModelNotFoundException $e) {
-            return $this->sendError('trạng thái không tồn tại', [], 404);
+            return $this->sendError('Trạng thái không tồn tại', [], 404);
         } catch (\Exception $th) {
             return $this->sendError('Có lỗi xảy ra khi khôi phục trạng thái.', ['error' => $th->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Post(

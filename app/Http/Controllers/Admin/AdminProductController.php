@@ -125,14 +125,15 @@ class AdminProductController extends BaseController
     public function show($id)
     {
         try {
-            // Tìm sản phẩm theo ID
+            // Tìm sản phẩm theo ID, bao gồm sản phẩm đã xóa mềm
             $product = Cache::remember("product_detail_{$id}", 60, function () use ($id) {
-                return Product::with([
-                    'category' => function ($query) {
-                        $query->where('active', 1); // Lấy danh mục có active = 1
-                    },
-                    'category.activeUnits' // Sử dụng quan hệ `activeUnits` đã khai báo với điều kiện `active = 1`
-                ])->find($id);
+                return Product::withTrashed() // Include soft-deleted products
+                    ->with([
+                        'category' => function ($query) {
+                            $query->where('active', 1); // Lấy danh mục có active = 1
+                        },
+                        'category.activeUnits' // Sử dụng quan hệ `activeUnits` đã khai báo với điều kiện `active = 1`
+                    ])->find($id);
             });
 
             return $this->sendResponse($product, 'Lấy sản phẩm thành công');
@@ -140,6 +141,7 @@ class AdminProductController extends BaseController
             return $this->sendError('Sản phẩm không tồn tại', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Get(
@@ -428,7 +430,7 @@ class AdminProductController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $products = Product::search($inputSearch)->get();
+            $products = Product::withTrashed()->search($inputSearch)->get();
 
             return $this->sendResponse($products, 'Sản phẩm tìm thấy');
         } catch (\Throwable $th) {
@@ -497,13 +499,19 @@ class AdminProductController extends BaseController
         try {
             $product = Product::findOrFail($id);
 
+            // Chuyển trạng thái `active` về 0
+            $product->active = 0;
+            $product->save();
+
+            // Thực hiện xóa mềm
             $product->delete();
 
-            return $this->sendResponse(null, 'Sản phẩm đã được xóa mềm thành công.');
+            return $this->sendResponse(null, 'Sản phẩm đã được xóa mềm và chuyển trạng thái active về 0.');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy sản phẩm.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Patch(
@@ -578,6 +586,12 @@ class AdminProductController extends BaseController
     {
         try {
             $product = Product::onlyTrashed()->findOrFail($id);
+
+            // Chuyển trạng thái `active` về 1 khi khôi phục
+            $product->active = 1;
+            $product->save();
+
+            // Khôi phục sản phẩm
             $product->restore();
 
             return $this->sendResponse($product, 'Sản phẩm đã được khôi phục thành công.');
@@ -585,6 +599,7 @@ class AdminProductController extends BaseController
             return $this->sendError('Không tìm thấy sản phẩm đã xóa.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Post(

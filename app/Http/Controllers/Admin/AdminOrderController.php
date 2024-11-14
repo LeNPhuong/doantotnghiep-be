@@ -184,7 +184,7 @@ class AdminOrderController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $orders = Order::with(['user', 'status', 'voucher', 'orderDetails', 'transaction'])->get();
+            $orders = Order::withTrashed()->with(['user', 'status', 'voucher', 'orderDetails', 'transaction'])->get();
 
             // Tìm kiếm trong 'code' của đơn hàng và 'name' của người dùng
             $filteredOrders = $orders->filter(function ($order) use ($inputSearch) {
@@ -288,7 +288,7 @@ class AdminOrderController extends BaseController
     public function show($id)
     {
         try {
-            $order = Order::with(['user', 'status', 'orderDetails.product', 'voucher', 'transaction'])->find($id);
+            $order = Order::withTrashed()->with(['user', 'status', 'orderDetails.product', 'voucher', 'transaction'])->find($id);
 
             if (!$order) {
                 return $this->sendError('Không tìm thấy đơn hàng', [], 404);

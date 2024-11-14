@@ -113,7 +113,7 @@ class AdminUnitsController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $Units = Unit::search($inputSearch)->get();
+            $Units = Unit::withTrashed()->search($inputSearch)->get();
 
             return $this->sendResponse($Units, 'Đơn vị tìm thấy');
         } catch (\Throwable $th) {
@@ -299,16 +299,24 @@ class AdminUnitsController extends BaseController
     public function delete($id)
     {
         try {
+            // Tìm đơn vị theo ID
             $unit = Unit::findOrFail($id);
+
+            // Chuyển trạng thái active về 0 trước khi xóa
+            $unit->active = 0;
+            $unit->save();  // Lưu thay đổi
+
+            // Xóa mềm đơn vị
             $unit->delete();
 
-            return $this->sendResponse(null, 'Xóa đơn vị thành công');
+            return $this->sendResponse(null, 'Xóa đơn vị thành công và chuyển trạng thái active về 0');
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Đơn vị không tồn tại', [], 404);
         } catch (\Exception $th) {
             return $this->sendError('Có lỗi xảy ra khi xóa đơn vị.', ['error' => $th->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Patch(
@@ -369,7 +377,13 @@ class AdminUnitsController extends BaseController
             $unit = Unit::withTrashed()->findOrFail($id);
 
             if ($unit->trashed()) {
+                // Chuyển trạng thái active về 1 trước khi khôi phục
+                $unit->active = 1;
+                $unit->save();  // Lưu thay đổi
+
+                // Khôi phục đơn vị
                 $unit->restore();
+
                 return $this->sendResponse($unit, 'Khôi phục đơn vị thành công');
             }
 
@@ -380,6 +394,7 @@ class AdminUnitsController extends BaseController
             return $this->sendError('Có lỗi xảy ra khi khôi phục đơn vị.', ['error' => $th->getMessage()], 500);
         }
     }
+
 
     /**
      * @OA\Post(

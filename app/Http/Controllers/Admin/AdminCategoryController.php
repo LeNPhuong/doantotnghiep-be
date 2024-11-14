@@ -449,7 +449,7 @@ class AdminCategoryController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $category = Category::search($inputSearch)->get();
+            $category = Category::withTrashed()->search($inputSearch)->get();
 
             if ($category->isEmpty()) {
                 return $this->sendResponse($category, 'Không tìm thấy danh mục');
@@ -527,11 +527,17 @@ class AdminCategoryController extends BaseController
     public function softDelete($id)
     {
         try {
-            $category = Category::find($id);
+            // Tìm danh mục theo ID
+            $category = Category::findOrFail($id);
 
+            // Cập nhật thuộc tính active về 0 trước khi xóa
+            $category->active = 0;
+            $category->save();  // Lưu thay đổi
+
+            // Xóa mềm danh mục
             $category->delete();
 
-            return $this->sendResponse(null, 'Danh mục đã được xóa mềm thành công.');
+            return $this->sendResponse(null, 'Danh mục đã được xóa mềm và trạng thái active đã được chuyển về 0 thành công.');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy danh mục.', ['error' => $th->getMessage()], 404);
         }
@@ -635,14 +641,22 @@ class AdminCategoryController extends BaseController
     public function restore($id)
     {
         try {
-            $category = Category::onlyTrashed()->find($id);
+            // Tìm danh mục đã xóa mềm
+            $category = Category::onlyTrashed()->findOrFail($id);
+
+            // Khôi phục danh mục
             $category->restore();
 
-            return $this->sendResponse($category, 'Danh mục đã được khôi phục thành công.');
+            // Cập nhật thuộc tính active về 1 sau khi khôi phục
+            $category->active = 1;
+            $category->save();  // Lưu thay đổi
+
+            return $this->sendResponse($category, 'Danh mục đã được khôi phục và trạng thái active đã được chuyển về 1 thành công.');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy danh mục đã xóa.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Post(

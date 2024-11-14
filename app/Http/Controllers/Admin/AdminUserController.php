@@ -350,7 +350,7 @@ class AdminUserController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $user = User::search($inputSearch)->get();
+            $user = User::withTrashed()->search($inputSearch)->get();
 
             return $this->sendResponse($user, 'Người dùng tìm thấy');
         } catch (\Throwable $th) {
@@ -403,15 +403,22 @@ class AdminUserController extends BaseController
     public function softDelete($id)
     {
         try {
+            // Tìm người dùng theo ID
             $user = User::findOrFail($id);
 
+            // Cập nhật thuộc tính active về 0 trước khi xóa
+            $user->active = 0;
+            $user->save();  // Lưu thay đổi
+
+            // Thực hiện xóa mềm
             $user->delete();
 
             return $this->sendResponse(null, 'Người dùng đã được xóa mềm thành công.');
         } catch (\Throwable $th) {
-            return $this->sendError('Không tìm thấy Người dùng.', ['error' => $th->getMessage()], 404);
+            return $this->sendError('Không tìm thấy người dùng.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Patch(
@@ -471,14 +478,22 @@ class AdminUserController extends BaseController
     public function restore($id)
     {
         try {
+            // Tìm người dùng đã bị xóa mềm
             $user = User::onlyTrashed()->findOrFail($id);
+
+            // Khôi phục người dùng
             $user->restore();
 
-            return $this->sendResponse($user, 'Người dùng đã được khôi phục thành công.');
+            // Cập nhật thuộc tính active về 1 sau khi khôi phục
+            $user->active = 1;
+            $user->save();  // Lưu thay đổi
+
+            return $this->sendResponse($user, 'Người dùng đã được khôi phục và chuyển trạng thái active về 1 thành công.');
         } catch (\Throwable $th) {
-            return $this->sendError('Không tìm thấy Người dùng đã xóa.', ['error' => $th->getMessage()], 404);
+            return $this->sendError('Không tìm thấy người dùng đã xóa.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Post(
