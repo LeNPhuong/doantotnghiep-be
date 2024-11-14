@@ -44,7 +44,7 @@ Route::group([
     //Xem thông tin tài khoản
     Route::get('/profile', [UserController::class, 'index'])->middleware('auth:api');
     //Thay đổi thông tin tài khoản
-    Route::put('/update-profile', [UserController::class, 'update'])->middleware('auth:api'); // Cập nhật thông tin người dùng
+    Route::post('/update-profile', [UserController::class, 'update'])->middleware('auth:api'); // Cập nhật thông tin người dùng
 
     //Lấy tất cả địa chỉ tài khoản
     Route::get('/address/all', [AddressController::class, 'index'])->middleware('auth:api');
@@ -124,7 +124,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/product/search',[AdminProductController::class, 'search']);
     Route::get('admin/product/{id}',[AdminProductController::class, 'show']);
     Route::get('admin/product/{id}/update',[AdminProductController::class, 'edit']);
-    Route::put('admin/product/{id}/update', [AdminProductController::class, 'update']);
+    Route::post('admin/product/{id}/update', [AdminProductController::class, 'update']);
     Route::delete('admin/product/{id}/soft-delete', [AdminProductController::class, 'softDelete']);
     Route::patch('admin/product/{id}/restore', [AdminProductController::class, 'restore']);
     Route::post('admin/product/create', [AdminProductController::class, 'create']);

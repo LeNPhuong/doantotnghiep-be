@@ -81,7 +81,6 @@ class UserController extends BaseController
      *                 @OA\Property(property="name", type="string", example="Nguyễn Văn A", description="Tên người dùng", minLength=1),
      *                 @OA\Property(property="phone", type="string", example="0123456789", description="Số điện thoại người dùng", minLength=1),
      *                 @OA\Property(property="email", type="string", example="example@example.com", description="Địa chỉ email người dùng", minLength=1),
-     *                  @OA\Property(property="_method", type="string", example="put"),
      *                 @OA\Property(property="avatar", type="string", format="binary", description="Tải lên hình ảnh avatar (bắt buộc nếu có)", nullable=true)
      *             )
      *         )

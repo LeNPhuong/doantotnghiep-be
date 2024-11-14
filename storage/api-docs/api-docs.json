@@ -3091,10 +3091,6 @@
                         "multipart/form-data": {
                             "schema": {
                                 "properties": {
-                                    "_method": {
-                                        "type": "string",
-                                        "example": "put"
-                                    },
                                     "cate_id": {
                                         "description": "ID danh mục sản phẩm",
                                         "type": "integer",
@@ -9237,10 +9233,6 @@
                                         "type": "string",
                                         "minLength": 1,
                                         "example": "example@example.com"
-                                    },
-                                    "_method": {
-                                        "type": "string",
-                                        "example": "put"
                                     },
                                     "avatar": {
                                         "description": "Tải lên hình ảnh avatar (bắt buộc nếu có)",

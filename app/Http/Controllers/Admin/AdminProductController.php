@@ -231,7 +231,6 @@ class AdminProductController extends BaseController
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
      *                 type="object",
-     *                 @OA\Property(property="_method", type="string", example="put"),
      *                 @OA\Property(property="cate_id", type="integer", description="ID danh mục sản phẩm",example=1),
      *                 @OA\Property(property="name", type="string", maxLength=255, description="Tên sản phẩm"),
      *                 @OA\Property(property="price", type="number", format="float", description="Giá sản phẩm"),
