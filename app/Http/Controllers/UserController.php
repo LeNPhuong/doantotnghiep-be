@@ -56,7 +56,7 @@ class UserController extends BaseController
     {
         try {
             // Tìm người dùng theo ID
-            $user = User::with(['vouchers', 'addresses'])->select('id', 'name', 'email', 'phone', 'role', 'avatar','birthday')->findOrFail(auth()->user()->id);
+            $user = User::with(['vouchers', 'addresses'])->select('id', 'name', 'email', 'phone', 'role', 'avatar', 'birthday')->findOrFail(auth()->user()->id);
 
             // Trả về thông tin người dùng dưới dạng JSON
             return $this->sendResponse($user, 'Thông tin người dùng đã được lấy thành công');
@@ -69,19 +69,43 @@ class UserController extends BaseController
      * @OA\Post(
      *     path="/api/auth/update-profile",
      *     summary="Cập nhật thông tin người dùng",
-     *     operationId="update",
+     *     operationId="updateProfile",
      *     tags={"auth"},
-     *     description="Cập nhật thông tin người dùng, bao gồm tên, số điện thoại, email và avatar.",
-     *     security={{"bearer": {}}},
+     *     description="Cập nhật thông tin người dùng bao gồm tên, số điện thoại, email và avatar. Các thông tin không bắt buộc nhập nếu đã tồn tại.",
+     *     security={{"bearer": {}}}, 
      *     @OA\RequestBody(
-     *         required=true,
+     *         required=false,
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(property="name", type="string", example="Nguyễn Văn A", description="Tên người dùng", minLength=1),
-     *                 @OA\Property(property="phone", type="string", example="0123456789", description="Số điện thoại người dùng", minLength=1),
-     *                 @OA\Property(property="email", type="string", example="example@example.com", description="Địa chỉ email người dùng", minLength=1),
-     *                 @OA\Property(property="avatar", type="string", format="binary", description="Tải lên hình ảnh avatar (bắt buộc nếu có)", nullable=true)
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Nguyễn Văn A",
+     *                     description="Tên người dùng",
+     *                     nullable=true
+     *                 ),
+     *                 @OA\Property(
+     *                     property="phone",
+     *                     type="string",
+     *                     example="0123456789",
+     *                     description="Số điện thoại người dùng",
+     *                     nullable=true
+     *                 ),
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string",
+     *                     example="example@example.com",
+     *                     description="Địa chỉ email người dùng",
+     *                     nullable=true
+     *                 ),
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="Upload ảnh đại diện của người dùng",
+     *                     nullable=true
+     *                 )
      *             )
      *         )
      *     ),
@@ -89,11 +113,15 @@ class UserController extends BaseController
      *         response=200,
      *         description="Thông tin tài khoản đã được cập nhật thành công.",
      *         @OA\JsonContent(
-     *             @OA\Property(property="id", type="integer", example=1),
-     *             @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
-     *             @OA\Property(property="phone", type="string", example="0123456789"),
-     *             @OA\Property(property="email", type="string", example="example@example.com"),
-     *             @OA\Property(property="avatar", type="string", example="http://example.com/avatar.jpg")
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
+     *                 @OA\Property(property="phone", type="string", example="0123456789"),
+     *                 @OA\Property(property="email", type="string", example="example@example.com"),
+     *                 @OA\Property(property="avatar", type="string", example="http://example.com/avatar.jpg")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Thay đổi thông tin tài khoản thành công.")
      *         )
      *     ),
      *     @OA\Response(
@@ -101,7 +129,10 @@ class UserController extends BaseController
      *         description="Lỗi định dạng dữ liệu đầu vào.",
      *         @OA\JsonContent(
      *             @OA\Property(property="error", type="string", example="Lỗi định dạng"),
-     *             @OA\Property(property="messages", type="object")
+     *             @OA\Property(property="messages", type="object", example={
+     *                 "email": {"Email đã tồn tại."},
+     *                 "phone": {"Số điện thoại không hợp lệ."}
+     *             })
      *         )
      *     ),
      *     @OA\Response(
@@ -117,9 +148,9 @@ class UserController extends BaseController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'phone' => 'required|string|max:15',
-                'email' => 'required|string|email|max:255',
+                'name' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:15',
+                'email' => 'nullable|string|email|max:255',
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -130,9 +161,16 @@ class UserController extends BaseController
                 ], 422); // 422 Unprocessable Entity
             }
             $user = User::findOrFail(auth()->user()->id);
-            $user->name = $request->name;
-            $user->phone = $request->phone;
-            $user->email = $request->email;
+            // Cập nhật thông tin nếu có dữ liệu từ request
+            if ($request->filled('name')) {
+                $user->name = $request->name;
+            }
+            if ($request->filled('phone')) {
+                $user->phone = $request->phone;
+            }
+            if ($request->filled('email')) {
+                $user->email = $request->email;
+            }
 
             // Upload avatar to Cloudinary
             if ($request->hasFile('avatar')) {
