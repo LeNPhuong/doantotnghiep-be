@@ -106,19 +106,28 @@ class AdminStatusController extends BaseController
      * )
      */
     public function search(Request $request)
-    {
-        try {
-            $inputSearch = $request->input('query');
+{
+    try {
+        $inputSearch = $request->input('query');
 
-            $Status = Status::withTrashed()->search($inputSearch)->get();
-            if ($Status->isEmpty()) {
-                return $this->sendError('Không tìm thấy trạng thái', [], 404);
-            }
-            return $this->sendResponse($Status, 'trạng thái tìm thấy');
-        } catch (\Throwable $th) {
-            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm trạng thái', ['error' => $th->getMessage()], 500);
+        // Sử dụng Eloquent để tìm kiếm theo các trường cụ thể, bao gồm các bản ghi đã xóa mềm
+        $status = Status::withTrashed()
+            ->where(function ($query) use ($inputSearch) {
+                $query->where('text_status', 'like', '%' . $inputSearch . '%');
+            })
+            ->get();
+
+        if ($status->isEmpty()) {
+            return $this->sendError('Không tìm thấy trạng thái', [], 404);
         }
+
+        return $this->sendResponse($status, 'Trạng thái tìm thấy');
+    } catch (\Throwable $th) {
+        return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm trạng thái', ['error' => $th->getMessage()], 500);
     }
+}
+
+
 
     /**
      * @OA\Get(
