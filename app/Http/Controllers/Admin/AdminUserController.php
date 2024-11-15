@@ -17,43 +17,43 @@ class AdminUserController extends BaseController
      *     summary="Lấy danh sách người dùng với thông tin phân loại và số người dùng mới trong tuần",
      *     tags={"admin/user"},
      *     security={{"bearer": {}}},
-     *     @OA\Parameter(
-     *         name="role",
-     *         in="query",
-     *         description="Lọc người dùng theo vai trò (tùy chọn)",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *             enum={"user", "admin"},
-     *             default="user"
-     *         )
-     *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
-     *         description="Lấy thành công thống kê và danh sách người dùng",
+     *         description="Lấy người dùng thành công",
      *         @OA\JsonContent(
-     *             @OA\Property(property="total_users", type="integer", description="Tổng số người dùng"),
-     *             @OA\Property(property="total_user_role", type="integer", description="Tổng số người dùng có vai trò 'user'"),
-     *             @OA\Property(property="total_admin_role", type="integer", description="Tổng số người dùng có vai trò 'admin'"),
-     *             @OA\Property(property="total_new_users_this_week", type="integer", description="Tổng số người dùng mới trong tuần qua"),
-     *             @OA\Property(property="users", type="array", 
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer", description="ID của người dùng"),
-     *                     @OA\Property(property="name", type="string", description="Tên của người dùng"),
-     *                     @OA\Property(property="email", type="string", description="Địa chỉ email của người dùng"),
-     *                     @OA\Property(property="role", type="string", description="Vai trò của người dùng"),
-     *                     @OA\Property(property="created_at", type="string", format="date-time", description="Ngày tạo người dùng"),
-     *                     @OA\Property(property="updated_at", type="string", format="date-time", description="Ngày cập nhật người dùng")
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Lấy người dùng thành công"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="total_users", type="integer", example=100),
+     *                 @OA\Property(property="total_user_role", type="integer", example=80),
+     *                 @OA\Property(property="total_admin_role", type="integer", example=20),
+     *                 @OA\Property(property="total_new_users_this_week", type="integer", example=10),
+     *                 @OA\Property(
+     *                     property="users",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="name", type="string", example="John Doe"),
+     *                         @OA\Property(property="email", type="string", example="johndoe@example.com"),
+     *                         @OA\Property(property="role", type="string", example="user"),
+     *                         @OA\Property(property="created_at", type="string", format="date-time", example="2024-11-15T09:45:00Z")
+     *                     )
      *                 )
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Không tìm thấy người dùng hoặc có lỗi khi lấy dữ liệu",
+     *         description="Lỗi định dạng",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Lỗi định dạng.")
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Lỗi định dạng."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="error", type="string", example="Không tìm thấy người dùng.")
+     *             )
      *         )
      *     )
      * )

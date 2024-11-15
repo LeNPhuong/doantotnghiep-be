@@ -5445,78 +5445,70 @@
                 ],
                 "summary": "Lấy danh sách người dùng với thông tin phân loại và số người dùng mới trong tuần",
                 "operationId": "895101ef1a579f1e11fb7d2ffac04d5b",
-                "parameters": [
-                    {
-                        "name": "role",
-                        "in": "query",
-                        "description": "Lọc người dùng theo vai trò (tùy chọn)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "default": "user",
-                            "enum": [
-                                "user",
-                                "admin"
-                            ]
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "Lấy thành công thống kê và danh sách người dùng",
+                        "description": "Lấy người dùng thành công",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "total_users": {
-                                            "description": "Tổng số người dùng",
-                                            "type": "integer"
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "total_user_role": {
-                                            "description": "Tổng số người dùng có vai trò 'user'",
-                                            "type": "integer"
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy người dùng thành công"
                                         },
-                                        "total_admin_role": {
-                                            "description": "Tổng số người dùng có vai trò 'admin'",
-                                            "type": "integer"
-                                        },
-                                        "total_new_users_this_week": {
-                                            "description": "Tổng số người dùng mới trong tuần qua",
-                                            "type": "integer"
-                                        },
-                                        "users": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "description": "ID của người dùng",
-                                                        "type": "integer"
-                                                    },
-                                                    "name": {
-                                                        "description": "Tên của người dùng",
-                                                        "type": "string"
-                                                    },
-                                                    "email": {
-                                                        "description": "Địa chỉ email của người dùng",
-                                                        "type": "string"
-                                                    },
-                                                    "role": {
-                                                        "description": "Vai trò của người dùng",
-                                                        "type": "string"
-                                                    },
-                                                    "created_at": {
-                                                        "description": "Ngày tạo người dùng",
-                                                        "type": "string",
-                                                        "format": "date-time"
-                                                    },
-                                                    "updated_at": {
-                                                        "description": "Ngày cập nhật người dùng",
-                                                        "type": "string",
-                                                        "format": "date-time"
-                                                    }
+                                        "data": {
+                                            "properties": {
+                                                "total_users": {
+                                                    "type": "integer",
+                                                    "example": 100
                                                 },
-                                                "type": "object"
-                                            }
+                                                "total_user_role": {
+                                                    "type": "integer",
+                                                    "example": 80
+                                                },
+                                                "total_admin_role": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "total_new_users_this_week": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "users": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "John Doe"
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "johndoe@example.com"
+                                                            },
+                                                            "role": {
+                                                                "type": "string",
+                                                                "example": "user"
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2024-11-15T09:45:00Z"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -5525,14 +5517,27 @@
                         }
                     },
                     "404": {
-                        "description": "Không tìm thấy người dùng hoặc có lỗi khi lấy dữ liệu",
+                        "description": "Lỗi định dạng",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "error": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
                                             "type": "string",
                                             "example": "Lỗi định dạng."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Không tìm thấy người dùng."
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
