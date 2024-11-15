@@ -33,10 +33,10 @@ class VoucherSeeder extends Seeder
             [
                 'code' => 'FLAT100',
                 'active' => 1,
-                'discount_type' => 'fixed_amount',
-                'discount_value' => 100.00,
-                'max_discount_value' => null,
-                'description' => 'Giảm giá 100.000 VNĐ cho mọi đơn hàng',
+                'discount_type' => 'percentage', // Chuyển thành phần trăm
+                'discount_value' => 10.00, // Đặt lại giá trị giảm giá, ví dụ 10%
+                'max_discount_value' => 100.00, // Có thể đặt giá trị tối đa nếu cần
+                'description' => 'Giảm giá 10% cho đơn hàng',
                 'quantity' => 50,
                 'start_date' => $now,
                 'end_date' => $now->copy()->addDays(15),
@@ -59,10 +59,10 @@ class VoucherSeeder extends Seeder
             [
                 'code' => 'WELCOME50',
                 'active' => 1,
-                'discount_type' => 'fixed_amount',
-                'discount_value' => 50.00,
-                'max_discount_value' => null,
-                'description' => 'Giảm giá 50.000 VNĐ cho khách hàng mới',
+                'discount_type' => 'percentage', // Chuyển thành phần trăm
+                'discount_value' => 5.00, // Đặt lại giá trị giảm giá, ví dụ 5%
+                'max_discount_value' => 50.00, // Có thể đặt giá trị tối đa nếu cần
+                'description' => 'Giảm giá 5% cho khách hàng mới',
                 'quantity' => 30,
                 'start_date' => $now,
                 'end_date' => $now->copy()->addDays(45),
@@ -70,6 +70,7 @@ class VoucherSeeder extends Seeder
                 'updated_at' => $now,
             ],
         ];
+
 
         // Lưu voucher vào cơ sở dữ liệu
         foreach ($vouchers as $voucher) {
