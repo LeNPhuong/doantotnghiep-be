@@ -73,7 +73,8 @@ class AdminUserController extends BaseController
             $totalNewUsersThisWeek = (clone $users)->where('created_at', '>=', $oneWeekAgo)->count();
 
             // Lấy danh sách người dùng
-            $userList = $users->get();
+            // $userList = $users->get(); //cái cũ
+            $userList = collect($users); //cái mới
 
             if ($userList->isEmpty()) {
                 return $this->sendResponse([

@@ -181,6 +181,8 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/orders/{id}',[AdminOrderController::class, 'show']);
     Route::get('admin/print/{id}',[AdminOrderController::class, 'print']);
     Route::put('admin/orders/confirm/{id}',[AdminOrderController::class, 'confirm']);
+    Route::put('admin/orders/cancel/{id}',[AdminOrderController::class, 'cancel']);
+
 
 });
 

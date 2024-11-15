@@ -504,4 +504,8 @@ class AdminOrderController extends BaseController
             return $this->sendError('Đã xảy ra lỗi trong quá trình duyệt đơn hàng', ['error' => $th->getMessage()], 500);
         }
     }
+
+    public function cancel ($id) {
+        
+    }
 }
