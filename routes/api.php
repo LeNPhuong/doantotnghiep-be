@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminCommentController;
@@ -33,7 +34,11 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
     //Làm mới token
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    
+    // Route để chuyển hướng đến Google
+    Route::get('google/redirect', [AuthController::class, 'redirectToGoogle']);
+
+    // Route để xử lý callback từ Google
+    Route::get('google/callback', [AuthController::class, 'handleGoogleCallback']);
     //Đơn hàng
     //Lấy chi tiết đơn hàng
     Route::get('/orders/{orderId}/details', [OrderController::class, 'getOrderDetails'])->middleware('auth:api');
@@ -93,7 +98,6 @@ Route::group([
     //Lấy tất cả danh mục sản phẩm
     Route::get('/', [CategoriesController::class, 'index']);
     Route::get('/{id}/products', [CategoriesController::class, 'getProductsByCategory']);
-
 });
 //Mua hàng
 Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth:api');
@@ -122,68 +126,66 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/dashboard', [DashboardController::class, 'index']);
 
     // Product
-    Route::get('admin/products',[AdminProductController::class, 'index']);
-    Route::get('admin/product/search',[AdminProductController::class, 'search']);
-    Route::get('admin/product/{id}',[AdminProductController::class, 'show']);
-    Route::get('admin/product/{id}/update',[AdminProductController::class, 'edit']);
+    Route::get('admin/products', [AdminProductController::class, 'index']);
+    Route::get('admin/product/search', [AdminProductController::class, 'search']);
+    Route::get('admin/product/{id}', [AdminProductController::class, 'show']);
+    Route::get('admin/product/{id}/update', [AdminProductController::class, 'edit']);
     Route::post('admin/product/{id}/update', [AdminProductController::class, 'update']);
     Route::delete('admin/product/{id}/soft-delete', [AdminProductController::class, 'softDelete']);
     Route::patch('admin/product/{id}/restore', [AdminProductController::class, 'restore']);
     Route::post('admin/product/create', [AdminProductController::class, 'create']);
-    
+
     // List danh mục
-    Route::get('admin/categories',[AdminCategoryController::class, 'index']);
+    Route::get('admin/categories', [AdminCategoryController::class, 'index']);
     Route::post('admin/category/create', [AdminCategoryController::class, 'create']);
-    Route::get('admin/category/{id}',[AdminCategoryController::class, 'show']);
-    Route::get('admin/category/{id}/edit',[AdminCategoryController::class, 'edit']);
+    Route::get('admin/category/{id}', [AdminCategoryController::class, 'show']);
+    Route::get('admin/category/{id}/edit', [AdminCategoryController::class, 'edit']);
     Route::put('admin/category/{id}/update', [AdminCategoryController::class, 'update']);
-    Route::get('admin/categories/search',[AdminCategoryController::class, 'search']);
+    Route::get('admin/categories/search', [AdminCategoryController::class, 'search']);
     Route::delete('admin/category/{id}/soft-delete', [AdminCategoryController::class, 'softDelete']);
     Route::patch('admin/category/{id}/restore', [AdminCategoryController::class, 'restore']);
-    
+
     // user 
-    Route::get('admin/users',[AdminUserController::class, 'index']);
-    Route::get('admin/user/search',[AdminUserController::class, 'search']);
-    Route::get('admin/user/{id}',[AdminUserController::class, 'show']);
+    Route::get('admin/users', [AdminUserController::class, 'index']);
+    Route::get('admin/user/search', [AdminUserController::class, 'search']);
+    Route::get('admin/user/{id}', [AdminUserController::class, 'show']);
     Route::get('admin/user/{id}/edit', [AdminUserController::class, 'edit']);
-    Route::put('admin/user/{id}/update',[AdminUserController::class, 'update']);
-    Route::delete('admin/user/{id}/delete',[AdminUserController::class, 'softDelete']);
-    Route::patch('admin/user/{id}/restore',[AdminUserController::class, 'restore']);
-    Route::post('admin/user/create',[AdminUserController::class, 'create']);
+    Route::put('admin/user/{id}/update', [AdminUserController::class, 'update']);
+    Route::delete('admin/user/{id}/delete', [AdminUserController::class, 'softDelete']);
+    Route::patch('admin/user/{id}/restore', [AdminUserController::class, 'restore']);
+    Route::post('admin/user/create', [AdminUserController::class, 'create']);
 
     // Quản lý đơn vị 
-    Route::get('admin/units',[AdminUnitsController::class, 'index']);
-    Route::get('admin/units/search',[AdminUnitsController::class, 'search']);
-    Route::get('admin/units/edit/{id}',[AdminUnitsController::class, 'edit']);
-    Route::put('admin/units/update/{id}',[AdminUnitsController::class, 'update']);
-    Route::delete('admin/units/delete/{id}',[AdminUnitsController::class, 'delete']);
-    Route::patch('admin/units/restore/{id}',[AdminUnitsController::class, 'restore']);
-    Route::post('admin/units/create',[AdminUnitsController::class, 'create']);
+    Route::get('admin/units', [AdminUnitsController::class, 'index']);
+    Route::get('admin/units/search', [AdminUnitsController::class, 'search']);
+    Route::get('admin/units/edit/{id}', [AdminUnitsController::class, 'edit']);
+    Route::put('admin/units/update/{id}', [AdminUnitsController::class, 'update']);
+    Route::delete('admin/units/delete/{id}', [AdminUnitsController::class, 'delete']);
+    Route::patch('admin/units/restore/{id}', [AdminUnitsController::class, 'restore']);
+    Route::post('admin/units/create', [AdminUnitsController::class, 'create']);
 
     // Quản lý Status
-    Route::get('admin/status',[AdminStatusController::class, 'index']);
-    Route::get('admin/status/search',[AdminStatusController::class, 'search']);
-    Route::get('admin/status/edit/{id}',[AdminStatusController::class, 'edit']);
-    Route::put('admin/status/update/{id}',[AdminStatusController::class, 'update']);
-    Route::delete('admin/status/delete/{id}',[AdminStatusController::class, 'delete']);
-    Route::patch('admin/status/restore/{id}',[AdminStatusController::class, 'restore']);
-    Route::post('admin/status/create',[AdminStatusController::class, 'create']);
-    
+    Route::get('admin/status', [AdminStatusController::class, 'index']);
+    Route::get('admin/status/search', [AdminStatusController::class, 'search']);
+    Route::get('admin/status/edit/{id}', [AdminStatusController::class, 'edit']);
+    Route::put('admin/status/update/{id}', [AdminStatusController::class, 'update']);
+    Route::delete('admin/status/delete/{id}', [AdminStatusController::class, 'delete']);
+    Route::patch('admin/status/restore/{id}', [AdminStatusController::class, 'restore']);
+    Route::post('admin/status/create', [AdminStatusController::class, 'create']);
+
     // Quản lý comment
-    Route::get('admin/comments/{id}',[AdminCommentController::class, 'index']);
-    Route::get('admin/comment/search',[AdminCommentController::class, 'search']);
-    Route::delete('admin/comments/delete/{id}',[AdminCommentController::class, 'delete']);
-    Route::patch('admin/comments/restore/{id}',[AdminCommentController::class, 'restore']);
-    
+    Route::get('admin/comments/{id}', [AdminCommentController::class, 'index']);
+    Route::get('admin/comment/search', [AdminCommentController::class, 'search']);
+    Route::delete('admin/comments/delete/{id}', [AdminCommentController::class, 'delete']);
+    Route::patch('admin/comments/restore/{id}', [AdminCommentController::class, 'restore']);
+
     // Quản lý đơn hàng
-    Route::get('admin/orders',[AdminOrderController::class, 'index']);
-    Route::get('admin/orders/search',[AdminOrderController::class, 'search']);
-    Route::get('admin/orders/{id}',[AdminOrderController::class, 'show']);
-    Route::get('admin/print/{id}',[AdminOrderController::class, 'print']);
-    Route::put('admin/orders/confirm/{id}',[AdminOrderController::class, 'confirm']);
-    Route::put('admin/orders/cancel/{id}',[AdminOrderController::class, 'cancel']);
-
-
+    Route::get('admin/orders', [AdminOrderController::class, 'index']);
+    Route::get('admin/orders/search', [AdminOrderController::class, 'search']);
+    Route::get('admin/orders/{id}', [AdminOrderController::class, 'show']);
+    Route::get('admin/print/{id}', [AdminOrderController::class, 'print']);
+    Route::put('admin/orders/confirm/{id}', [AdminOrderController::class, 'confirm']);
+    Route::put('admin/orders/cancel/{id}', [AdminOrderController::class, 'cancel']);
 });
 
 
