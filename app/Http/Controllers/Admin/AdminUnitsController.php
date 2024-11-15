@@ -109,17 +109,27 @@ class AdminUnitsController extends BaseController
      * )
      */
     public function search(Request $request)
-    {
-        try {
-            $inputSearch = $request->input('query');
+{
+    try {
+        $inputSearch = $request->input('query');
 
-            $Units = Unit::withTrashed()->search($inputSearch)->get();
+        // Tìm kiếm thủ công trong các trường của Unit, bao gồm các bản ghi đã xóa mềm
+        $units = Unit::withTrashed() // Bao gồm cả các bản ghi đã xóa mềm
+            ->where(function ($query) use ($inputSearch) {
+                $query->where('name', 'like', '%' . $inputSearch . '%');
+            })
+            ->get();
 
-            return $this->sendResponse($Units, 'Đơn vị tìm thấy');
-        } catch (\Throwable $th) {
-            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm Đơn vị', ['error' => $th->getMessage()], 500);
+        if ($units->isEmpty()) {
+            return $this->sendError('Không tìm thấy đơn vị', [], 404);
         }
+
+        return $this->sendResponse($units, 'Đơn vị tìm thấy');
+    } catch (\Throwable $th) {
+        return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm đơn vị', ['error' => $th->getMessage()], 500);
     }
+}
+
 
     /**
      * @OA\Get(

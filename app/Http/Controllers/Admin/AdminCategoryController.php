@@ -445,21 +445,27 @@ class AdminCategoryController extends BaseController
      * )
      */
     public function search(Request $request)
-    {
-        try {
-            $inputSearch = $request->input('query');
+{
+    try {
+        $inputSearch = $request->input('query');
 
-            $category = Category::withTrashed()->search($inputSearch)->get();
+        // Tìm kiếm thủ công trong các trường cần thiết bao gồm các danh mục đã xóa mềm
+        $category = Category::where(function ($query) use ($inputSearch) {
+            $query->where('name', 'like', '%' . $inputSearch . '%');  // Tìm kiếm theo tên danh mục
+        })
+        ->withTrashed()  // Bao gồm các bản ghi đã xóa mềm
+        ->get();
 
-            if ($category->isEmpty()) {
-                return $this->sendResponse($category, 'Không tìm thấy danh mục');
-            }
-
-            return $this->sendResponse($category, 'Danh mục tìm thấy');
-        } catch (\Throwable $th) {
-            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm danh mục', ['error' => $th->getMessage()], 500);
+        if ($category->isEmpty()) {
+            return $this->sendResponse($category, 'Không tìm thấy danh mục');
         }
+
+        return $this->sendResponse($category, 'Danh mục tìm thấy');
+    } catch (\Throwable $th) {
+        return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm danh mục', ['error' => $th->getMessage()], 500);
     }
+}
+
 
     /**
      * @OA\Delete(

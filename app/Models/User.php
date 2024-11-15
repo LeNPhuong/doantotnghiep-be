@@ -37,11 +37,15 @@ class User extends Authenticatable implements JWTSubject
         return [
             'id' => $this->id,
             'name' => $this->name,
-            // 'description' => $this->description,
-            // Thêm các trường khác nếu cần
+            'email' => $this->email,  
+            'phone' => $this->phone,  
         ];
     }
-
+    public function shouldBeSearchable()
+    {
+        return true;  // Bao gồm cả các bản ghi đã xóa mềm vào chỉ mục tìm kiếm
+    }
+    
     /**
      * The attributes that should be hidden for serialization.
      *

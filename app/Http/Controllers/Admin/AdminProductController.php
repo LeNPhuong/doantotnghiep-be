@@ -426,17 +426,24 @@ class AdminProductController extends BaseController
      * )
      */
     public function search(Request $request)
-    {
-        try {
-            $inputSearch = $request->input('query');
+{
+    try {
+        $inputSearch = $request->input('query');
 
-            $products = Product::withTrashed()->search($inputSearch)->get();
+        // Tìm kiếm thủ công bao gồm các bản ghi đã xóa mềm
+        $products = Product::where(function ($query) use ($inputSearch) {
+            $query->where('name', 'like', '%' . $inputSearch . '%')  // Tìm kiếm theo tên sản phẩm
+                  ->orWhere('description', 'like', '%' . $inputSearch . '%'); // Tìm kiếm theo mô tả sản phẩm (nếu có)
+        })
+        ->withTrashed()  // Bao gồm các sản phẩm đã xóa mềm
+        ->get();
 
-            return $this->sendResponse($products, 'Sản phẩm tìm thấy');
-        } catch (\Throwable $th) {
-            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm sản phẩm', ['error' => $th->getMessage()], 500);
-        }
+        return $this->sendResponse($products, 'Sản phẩm tìm thấy');
+    } catch (\Throwable $th) {
+        return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm sản phẩm', ['error' => $th->getMessage()], 500);
     }
+}
+
 
     /**
      * @OA\Delete(

@@ -9,7 +9,7 @@ use Laravel\Scout\Searchable;
 
 class Status extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, Searchable;
     protected $table = 'status';
     public $timestamps = false;
     protected $fillable = [
@@ -23,6 +23,11 @@ class Status extends Model
             'id' => $this->id,
             'text_status' => $this->text_status
         ];
+    }
+
+    public function shouldBeSearchable()
+    {
+        return true;  // Bao gồm cả các bản ghi đã xóa mềm vào chỉ mục tìm kiếm
     }
 
     // Định nghĩa mối quan hệ với bảng Order

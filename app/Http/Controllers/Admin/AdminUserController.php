@@ -102,12 +102,14 @@ class AdminUserController extends BaseController
     {
         $role = $request->query('role');
 
+        // Sử dụng withTrashed() để bao gồm cả người dùng đã xóa mềm
         if ($role) {
-            return User::where('role', $role)->get();
+            return User::withTrashed()->where('role', $role)->get();
         }
 
-        return User::all();
+        return User::withTrashed()->get();
     }
+
 
     /**
      * @OA\Get(
@@ -351,11 +353,18 @@ class AdminUserController extends BaseController
         try {
             $inputSearch = $request->input('query');
 
-            $user = User::withTrashed()->search($inputSearch)->get();
+            // Tìm kiếm thủ công bao gồm các bản ghi đã xóa mềm
+            $users = User::where(function ($query) use ($inputSearch) {
+                $query->where('name', 'like', '%' . $inputSearch . '%')
+                    ->orWhere('email', 'like', '%' . $inputSearch . '%')
+                    ->orWhere('phone', 'like', '%' . $inputSearch . '%');  // Thêm điều kiện tìm kiếm theo phone
+            })
+                ->withTrashed()  // Bao gồm các bản ghi đã xóa mềm
+                ->get();
 
-            return $this->sendResponse($user, 'Người dùng tìm thấy');
+            return $this->sendResponse($users, 'Người dùng tìm thấy');
         } catch (\Throwable $th) {
-            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm Người dùng', ['error' => $th->getMessage()], 500);
+            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm người dùng', ['error' => $th->getMessage()], 500);
         }
     }
 
