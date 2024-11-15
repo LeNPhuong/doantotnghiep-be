@@ -29,6 +29,7 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'role',
         'remember_token',
+        'google_id'
     ];
 
     public function toSearchableArray()

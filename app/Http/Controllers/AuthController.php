@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Str;
 
 
 class AuthController extends BaseController
@@ -215,6 +218,55 @@ class AuthController extends BaseController
             return $this->sendResponse('', 'Đăng xuất thành công');
         } catch (\Exception $e) {
             return $this->sendError('Đã xảy ra lỗi', ['error' => 'Không thể thực hiện đăng xuất'], 500);
+        }
+    }
+
+
+    /**
+     * @OA\Get(
+     *     path="/api/auth/google/redirect",
+     *     summary="Chuyển hướng người dùng đến trang xác thực Google",
+     *     tags={"Google Auth"},
+     *     @OA\Response(
+     *         response=302,
+     *         description="Chuyển hướng đến Google để đăng nhập",
+     *     ),
+     * )
+     */
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
+    // Hàm callback xử lý dữ liệu từ Google
+    public function handleGoogleCallback(Request $request)
+    {
+        try {
+            // Lấy thông tin người dùng từ Google sau khi có mã code
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            // Kiểm tra người dùng đã tồn tại trong hệ thống chưa
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if (!$user) {
+                // Nếu chưa có, tạo mới người dùng
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'password' => bcrypt(Str::random(16)), // Tạo mật khẩu ngẫu nhiên
+                    'google_id' => $googleUser->getId(),
+                ]);
+            }
+
+            // Đăng nhập người dùng vào ứng dụng
+            Auth::login($user);
+            // Tạo JWT token và trả về cho người dùng
+            $token = JWTAuth::fromUser($user);
+
+            return response()->json(['token' => $token], 200);
+        } catch (\Exception $e) {
+            // In lỗi chi tiết để giúp debug
+            return response()->json(['error' => 'Đăng nhập bằng Google thất bại!', 'message' => $e->getMessage()], 500);
         }
     }
 

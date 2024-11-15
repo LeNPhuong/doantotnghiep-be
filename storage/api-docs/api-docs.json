@@ -6754,6 +6754,20 @@
                 ]
             }
         },
+        "/api/auth/google/redirect": {
+            "get": {
+                "tags": [
+                    "Google Auth"
+                ],
+                "summary": "Chuyển hướng người dùng đến trang xác thực Google",
+                "operationId": "73f83900339119492b138bcd4eecbecb",
+                "responses": {
+                    "302": {
+                        "description": "Chuyển hướng đến Google để đăng nhập"
+                    }
+                }
+            }
+        },
         "/api/categories": {
             "get": {
                 "tags": [
@@ -9630,6 +9644,10 @@
         {
             "name": "admin/dashboard",
             "description": "admin/dashboard"
+        },
+        {
+            "name": "Google Auth",
+            "description": "Google Auth"
         },
         {
             "name": "category",
