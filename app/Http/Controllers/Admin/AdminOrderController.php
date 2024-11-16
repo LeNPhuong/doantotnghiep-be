@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\BaseController;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AdminOrderController extends BaseController
 {
@@ -484,8 +485,6 @@ class AdminOrderController extends BaseController
                 return $this->sendError('Không tìm thấy đơn hàng', [], 404);
             } else if ($order->status->text_status == 'Chưa thanh toán') {
                 return $this->sendError('Đơn hàng chưa thanh toán', [], 400);
-            } else if ($order->status->text_status == 'Đang giao') {
-                return $this->sendError('Đơn hàng đang giao', [], 400);
             } else if ($order->status->text_status == 'Đã giao') {
                 return $this->sendError('Đơn đã giao', [], 400);
             } else if ($order->status->text_status == 'Đã hủy') {
@@ -497,6 +496,9 @@ class AdminOrderController extends BaseController
             if ($order->status_id == 2) {
                 $order->status_id = 3;
                 $order->save();
+            } else if($order->status_id == 3) {
+                $order->status_id = 4;
+                $order->save();
             }
 
             return $this->sendResponse($order, 'Duyệt đơn hàng thành công');
@@ -505,7 +507,49 @@ class AdminOrderController extends BaseController
         }
     }
 
-    public function cancel ($id) {
-        
+    public function cancel($id) {
+        try {
+            $order = Order::with(['user', 'status', 'orderDetails.product', 'transaction'])->findOrFail($id);
+            
+            if (!$order) {
+                return $this->sendError('Không tìm thấy đơn hàng', [], 404);
+            }
+            
+            // Kiểm tra giá trị status_id của đơn hàng
+            if ($order->status_id == 3) {
+                return $this->sendError('Đơn hàng đang giao không được phép hủy', [], 400);
+            } else if ($order->status_id == 4) {
+                return $this->sendError('Đơn hàng đã giao thành công, không được phép hủy', [], 400);
+            } else if ($order->status_id == 5) {
+                return $this->sendError('Đơn hàng đã được hủy trước đó', [], 400);
+            } else if ($order->status_id == 6) { // Trường hợp trả hàng
+                return $this->sendError('Đơn hàng đã trả về, không thể hủy', [], 400);
+            }
+            
+            // Cập nhật trạng thái đơn hàng thành "Đã hủy"
+            $order->status_id = 5;
+            $order->save();
+    
+            // Cộng lại số lượng sản phẩm trong kho
+            foreach ($order->orderDetails as $detail) {
+                $product = $detail->product;
+                if ($product) {
+                    $product->quantity += $detail->quantity;
+                    $product->save();
+                }
+            }
+    
+            // Ghi log admin hủy đơn
+            Log::info('Admin đã hủy đơn hàng và hoàn kho', [
+                'order_id' => $order->id,
+                'admin_id' => auth()->id(),
+            ]);
+    
+            return $this->sendResponse($order, 'Hủy đơn hàng thành công và đã cộng lại sản phẩm vào kho');
+        } catch (\Throwable $th) {
+            return $this->sendError('Đã xảy ra lỗi trong quá trình hủy đơn hàng', ['error' => $th->getMessage()], 500);
+        }
     }
+    
+    
 }
