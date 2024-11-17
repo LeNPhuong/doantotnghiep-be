@@ -139,6 +139,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     // List danh mục
     Route::get('admin/categories', [AdminCategoryController::class, 'index']);
     Route::post('admin/category/create', [AdminCategoryController::class, 'create']);
+    Route::get('admin/category/units', [AdminCategoryController::class, 'units']);
     Route::get('admin/category/{id}', [AdminCategoryController::class, 'show']);
     Route::get('admin/category/{id}/edit', [AdminCategoryController::class, 'edit']);
     Route::put('admin/category/{id}/update', [AdminCategoryController::class, 'update']);
@@ -189,8 +190,8 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::put('admin/orders/cancel/{id}', [AdminOrderController::class, 'cancel']);
     
     // Quản lý category và unit
-    Route::get('admin/cate-units', [AdminCateUnitController::class, 'index']);
-
+    Route::delete('admin/delete/cate-units/{id}', [AdminCateUnitController::class, 'softDelete']);
+    
 });
 
 
