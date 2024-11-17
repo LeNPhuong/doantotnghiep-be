@@ -826,6 +826,48 @@ class AdminCategoryController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/admin/category/units",
+     *     summary="Lấy danh sách đơn vị",
+     *     description="API này trả về danh sách toàn bộ các đơn vị (units)",
+     *     tags={"admin/category"},
+     *     security={{"bearer":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy danh sách đơn vị thành công hoặc danh sách đơn vị trống",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", 
+     *                 example="Lấy danh sách đơn vị thành công hoặc Chưa có đơn vị nào."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="Kilogram"),
+     *                     @OA\Property(property="description", type="string", example="Đơn vị đo lường khối lượng")
+     *                 ),
+     *                 example={}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi xảy ra khi lấy danh sách đơn vị",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Lỗi xảy ra khi lấy danh sách đơn vị."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Lỗi server")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+
     public function units()
     {
         try {
