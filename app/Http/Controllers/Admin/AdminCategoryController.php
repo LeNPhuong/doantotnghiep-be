@@ -666,7 +666,6 @@ class AdminCategoryController extends BaseController
         try {
             // Tìm danh mục đã xóa mềm
             $category = Category::onlyTrashed()->findOrFail($id);
-
             // Khôi phục danh mục
             $category->restore();
 
@@ -674,11 +673,18 @@ class AdminCategoryController extends BaseController
             $category->active = 1;
             $category->save();  // Lưu thay đổi
 
-            return $this->sendResponse($category, 'Danh mục đã được khôi phục và trạng thái active đã được chuyển về 1 thành công.');
+            // Khôi phục tất cả sản phẩm liên quan đến danh mục đã khôi phục
+            $category->products()->onlyTrashed()->restore(); // Khôi phục sản phẩm đã xóa mềm
+
+            // Cập nhật thuộc tính active về 1 cho tất cả sản phẩm sau khi khôi phục
+            $category->products()->update(['active' => 1]);  // Cập nhật trạng thái active
+
+            return $this->sendResponse($category, 'Danh mục và tất cả sản phẩm liên quan đã được khôi phục và trạng thái active đã được chuyển về 1 thành công.');
         } catch (\Throwable $th) {
             return $this->sendError('Không tìm thấy danh mục đã xóa.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
 
     /**
@@ -821,19 +827,18 @@ class AdminCategoryController extends BaseController
     }
 
     public function units()
-{
-    try {
-        // Lấy toàn bộ danh sách units
-        $units = Unit::all();
+    {
+        try {
+            // Lấy toàn bộ danh sách units
+            $units = Unit::all();
 
-        if ($units->isEmpty()) {
-            return $this->sendResponse($units, 'Chưa có đơn vị nào.');
+            if ($units->isEmpty()) {
+                return $this->sendResponse($units, 'Chưa có đơn vị nào.');
+            }
+
+            return $this->sendResponse($units, 'Lấy danh sách đơn vị thành công.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Lỗi xảy ra khi lấy danh sách đơn vị.', ['error' => $th->getMessage()], 500);
         }
-
-        return $this->sendResponse($units, 'Lấy danh sách đơn vị thành công.');
-    } catch (\Throwable $th) {
-        return $this->sendError('Lỗi xảy ra khi lấy danh sách đơn vị.', ['error' => $th->getMessage()], 500);
     }
-}
-
 }
