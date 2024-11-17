@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminCateUnitController;
 use App\Http\Controllers\Admin\AdminCommentController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\AuthController;
@@ -186,6 +187,10 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/print/{id}', [AdminOrderController::class, 'print']);
     Route::put('admin/orders/confirm/{id}', [AdminOrderController::class, 'confirm']);
     Route::put('admin/orders/cancel/{id}', [AdminOrderController::class, 'cancel']);
+    
+    // Quản lý category và unit
+    Route::get('admin/cate-units', [AdminCateUnitController::class, 'index']);
+
 });
 
 

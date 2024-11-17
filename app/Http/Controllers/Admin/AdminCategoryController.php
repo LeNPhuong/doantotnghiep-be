@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseController;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 
@@ -73,15 +74,21 @@ class AdminCategoryController extends BaseController
     public function index()
     {
         try {
-            $category = Category::withTrashed()->get();
-            if ($category->isEmpty()) {
-                return $this->sendResponse($category, 'Chưa có danh mục sản phẩm');
+            // Eager load quan hệ `units` qua `category_unit`
+            $categories = Category::withTrashed()
+                ->with(['units']) // Hoặc sử dụng categoryUnits nếu cần cả hai
+                ->get();
+
+            if ($categories->isEmpty()) {
+                return $this->sendResponse($categories, 'Chưa có danh mục sản phẩm');
             }
-            return $this->sendResponse($category, 'Lấy danh mục thành công');
+
+            return $this->sendResponse($categories, 'Lấy danh mục thành công');
         } catch (\Throwable $th) {
             return $this->sendError('Lỗi định dạng.', ['error' => $th->getMessage()], 404);
         }
     }
+
 
     /**
      * @OA\Get(
@@ -445,26 +452,26 @@ class AdminCategoryController extends BaseController
      * )
      */
     public function search(Request $request)
-{
-    try {
-        $inputSearch = $request->input('query');
+    {
+        try {
+            $inputSearch = $request->input('query');
 
-        // Tìm kiếm thủ công trong các trường cần thiết bao gồm các danh mục đã xóa mềm
-        $category = Category::where(function ($query) use ($inputSearch) {
-            $query->where('name', 'like', '%' . $inputSearch . '%');  // Tìm kiếm theo tên danh mục
-        })
-        ->withTrashed()  // Bao gồm các bản ghi đã xóa mềm
-        ->get();
+            // Tìm kiếm thủ công trong các trường cần thiết bao gồm các danh mục đã xóa mềm
+            $category = Category::where(function ($query) use ($inputSearch) {
+                $query->where('name', 'like', '%' . $inputSearch . '%');  // Tìm kiếm theo tên danh mục
+            })
+                ->withTrashed()  // Bao gồm các bản ghi đã xóa mềm
+                ->get();
 
-        if ($category->isEmpty()) {
-            return $this->sendResponse($category, 'Không tìm thấy danh mục');
+            if ($category->isEmpty()) {
+                return $this->sendResponse($category, 'Không tìm thấy danh mục');
+            }
+
+            return $this->sendResponse($category, 'Danh mục tìm thấy');
+        } catch (\Throwable $th) {
+            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm danh mục', ['error' => $th->getMessage()], 500);
         }
-
-        return $this->sendResponse($category, 'Danh mục tìm thấy');
-    } catch (\Throwable $th) {
-        return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm danh mục', ['error' => $th->getMessage()], 500);
     }
-}
 
 
     /**
@@ -766,15 +773,38 @@ class AdminCategoryController extends BaseController
     public function create(Request $request)
     {
         try {
+            // Validate dữ liệu
             $validatedData = $request->validate([
                 'name' => 'required|string|max:191',
                 'key' => 'required|string|max:191',
-                'active' => 'required|boolean',
+                // 'active' => 'required|boolean',
+                'unit_ids' => 'nullable|array', // Thêm mảng unit_ids
+                'unit_ids.*' => 'integer|exists:units,id', // Kiểm tra từng phần tử phải là số nguyên và tồn tại trong bảng units
             ]);
 
-            $category = Category::create($validatedData);
+            // Tạo category
+            $category = Category::create([
+                'name' => $validatedData['name'],
+                'key' => $validatedData['key'],
+                // 'active' => true,
+            ]);
 
-            return $this->sendResponse($category, 'Danh mục đã được thêm thành công.');
+            // Thêm dữ liệu vào bảng category_unit nếu có unit_ids
+            if (!empty($validatedData['unit_ids'])) {
+                $categoryUnits = [];
+                foreach ($validatedData['unit_ids'] as $unitId) {
+                    $categoryUnits[] = [
+                        'category_id' => $category->id,
+                        'unit_id' => $unitId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                // Batch insert vào bảng category_unit
+                DB::table('category_unit')->insert($categoryUnits);
+            }
+
+            return $this->sendResponse($category, 'Danh mục và liên kết unit đã được thêm thành công.');
         } catch (\Exception $e) {
             return $this->sendError('Có lỗi xảy ra trong quá trình thêm danh mục', ['error' => $e->getMessage()], 500);
         }
