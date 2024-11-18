@@ -92,6 +92,12 @@ class AuthController extends BaseController
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
+
+        // Kiểm tra và gán giá trị role nếu cần (Đảm bảo chỉ có 'user' role)
+        if (isset($input['role']) && $input['role'] !== 'user') {
+            $input['role'] = 'user'; // Đặt lại role mặc định nếu có trường role
+        }
+        
         $user = User::create($input);
         $success['user'] = $user;
         return $this->sendResponse($success, 'Đăng ký tài khoản thành công.', 201);
