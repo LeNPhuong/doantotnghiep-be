@@ -52,7 +52,6 @@ class PasswordController extends BaseController
      */
     public function sendOtp(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'email' => 'required|exists:users|email'
         ]);
@@ -60,17 +59,47 @@ class PasswordController extends BaseController
         if ($validator->fails()) {
             return $this->sendError('Lỗi định dạng', $validator->errors());
         }
+
         $user = User::where('email', $request->email)->first();
         $otp = rand(100000, 999999); // Tạo mã OTP ngẫu nhiên
-        $otpData = [
-            'email' => $request->email,
-            'token' => $otp,
-        ];
-        if (UserResetToken::create($otpData)) {
-            Mail::to($request->email)->send(new ForgotPassword($user, $otp));
-            return $this->sendResponse('OTP đã được gửi tới email', 200);
+
+        // Kiểm tra nếu đã tồn tại OTP với email này
+        $existingOtp = UserResetToken::where('email', $request->email)->first();
+
+        if ($existingOtp) {
+            $timeSinceLastAttempt = abs(now()->diffInMinutes($existingOtp->created_at));  // Lấy thời gian từ lần gửi trước            
+            // Nếu đã gửi quá 3 lần và thời gian chưa đủ 1 phút
+            if ($existingOtp->attempts >= 3 && $timeSinceLastAttempt < 1) {
+                return $this->sendError('Bạn đã gửi quá 3 lần. Vui lòng đợi 1 phút để gửi lại.', []);
+            }
+
+            // Nếu đã qua 1 phút kể từ lần gửi cuối cùng, đặt lại số lần thử
+            if ($timeSinceLastAttempt >= 1) {
+                $existingOtp->attempts = 0;
+            }
+
+            // Tăng số lần thử
+            $existingOtp->attempts += 1;
+            $existingOtp->token = $otp;
+            $existingOtp->created_at = now();
+            $existingOtp->save();
+        } else {
+            // Nếu chưa tồn tại, tạo mới
+            $otpData = [
+                'email' => $request->email,
+                'token' => $otp,
+                'attempts' => 1,
+                'created_at' => now()
+            ];
+            UserResetToken::create($otpData);
         }
+
+        // Gửi email OTP
+        Mail::to($request->email)->send(new ForgotPassword($user, $otp));
+        return $this->sendResponse('OTP đã được gửi tới email', 200);
     }
+
+
 
     /**
      * @OA\Post(

@@ -2901,6 +2901,118 @@
                 ]
             }
         },
+        "/api/admin/orders/cancel/{id}": {
+            "delete": {
+                "tags": [
+                    "admin/orders"
+                ],
+                "summary": "Hủy đơn hàng",
+                "description": "Hủy đơn hàng dựa trên ID đơn hàng và cập nhật lại số lượng sản phẩm trong kho",
+                "operationId": "04ee5d7cd68d3b1e4caf597fce3e35eb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của đơn hàng",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hủy đơn hàng thành công và đã cộng lại sản phẩm vào kho",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID của đơn hàng",
+                                                    "type": "integer"
+                                                },
+                                                "status_id": {
+                                                    "description": "Trạng thái của đơn hàng",
+                                                    "type": "integer"
+                                                },
+                                                "user": {
+                                                    "description": "Thông tin người dùng",
+                                                    "type": "object"
+                                                },
+                                                "orderDetails": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "description": "Chi tiết đơn hàng",
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "transaction": {
+                                                    "description": "Thông tin giao dịch",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi: Trạng thái đơn hàng không hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đơn hàng đang giao không được phép hủy"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Lỗi: Không tìm thấy đơn hàng",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Không tìm thấy đơn hàng"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi máy chủ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi trong quá trình hủy đơn hàng"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/products": {
             "get": {
                 "tags": [

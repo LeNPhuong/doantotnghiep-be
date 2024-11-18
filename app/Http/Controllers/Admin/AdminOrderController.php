@@ -496,7 +496,7 @@ class AdminOrderController extends BaseController
             if ($order->status_id == 2) {
                 $order->status_id = 3;
                 $order->save();
-            } else if($order->status_id == 3) {
+            } else if ($order->status_id == 3) {
                 $order->status_id = 4;
                 $order->save();
             }
@@ -507,14 +507,69 @@ class AdminOrderController extends BaseController
         }
     }
 
-    public function cancel($id) {
+    /**
+     * @OA\Delete(
+     *     path="/api/admin/orders/cancel/{id}",
+     *     summary="Hủy đơn hàng",
+     *     description="Hủy đơn hàng dựa trên ID đơn hàng và cập nhật lại số lượng sản phẩm trong kho",
+     *     tags={"admin/orders"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID của đơn hàng",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Hủy đơn hàng thành công và đã cộng lại sản phẩm vào kho",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", description="ID của đơn hàng"),
+     *                 @OA\Property(property="status_id", type="integer", description="Trạng thái của đơn hàng"),
+     *                 @OA\Property(property="user", type="object", description="Thông tin người dùng"),
+     *                 @OA\Property(property="orderDetails", type="array", @OA\Items(type="object", description="Chi tiết đơn hàng")),
+     *                 @OA\Property(property="transaction", type="object", description="Thông tin giao dịch")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Lỗi: Trạng thái đơn hàng không hợp lệ",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Đơn hàng đang giao không được phép hủy")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Lỗi: Không tìm thấy đơn hàng",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Không tìm thấy đơn hàng")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi máy chủ",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi trong quá trình hủy đơn hàng")
+     *         )
+     *     )
+     * )
+     */
+    public function cancel($id)
+    {
         try {
             $order = Order::with(['user', 'status', 'orderDetails.product', 'transaction'])->findOrFail($id);
-            
+
             if (!$order) {
                 return $this->sendError('Không tìm thấy đơn hàng', [], 404);
             }
-            
+
             // Kiểm tra giá trị status_id của đơn hàng
             if ($order->status_id == 3) {
                 return $this->sendError('Đơn hàng đang giao không được phép hủy', [], 400);
@@ -525,11 +580,11 @@ class AdminOrderController extends BaseController
             } else if ($order->status_id == 6) { // Trường hợp trả hàng
                 return $this->sendError('Đơn hàng đã trả về, không thể hủy', [], 400);
             }
-            
+
             // Cập nhật trạng thái đơn hàng thành "Đã hủy"
             $order->status_id = 5;
             $order->save();
-    
+
             // Cộng lại số lượng sản phẩm trong kho
             foreach ($order->orderDetails as $detail) {
                 $product = $detail->product;
@@ -538,18 +593,16 @@ class AdminOrderController extends BaseController
                     $product->save();
                 }
             }
-    
+
             // Ghi log admin hủy đơn
             Log::info('Admin đã hủy đơn hàng và hoàn kho', [
                 'order_id' => $order->id,
                 'admin_id' => auth()->id(),
             ]);
-    
+
             return $this->sendResponse($order, 'Hủy đơn hàng thành công và đã cộng lại sản phẩm vào kho');
         } catch (\Throwable $th) {
             return $this->sendError('Đã xảy ra lỗi trong quá trình hủy đơn hàng', ['error' => $th->getMessage()], 500);
         }
     }
-    
-    
 }
