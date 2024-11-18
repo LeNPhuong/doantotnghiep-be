@@ -69,12 +69,12 @@ class PasswordController extends BaseController
         if ($existingOtp) {
             $timeSinceLastAttempt = abs(now()->diffInMinutes($existingOtp->created_at));  // Lấy thời gian từ lần gửi trước            
             // Nếu đã gửi quá 3 lần và thời gian chưa đủ 1 phút
-            if ($existingOtp->attempts >= 3 && $timeSinceLastAttempt < 1) {
+            if ($existingOtp->attempts >= 3 && $timeSinceLastAttempt < 60) {
                 return $this->sendError('Bạn đã gửi quá 3 lần. Vui lòng đợi 1 phút để gửi lại.', []);
             }
 
             // Nếu đã qua 1 phút kể từ lần gửi cuối cùng, đặt lại số lần thử
-            if ($timeSinceLastAttempt >= 1) {
+            if ($timeSinceLastAttempt >= 60) {
                 $existingOtp->attempts = 0;
             }
 
