@@ -14,7 +14,7 @@ class AdminCateUnitController extends BaseController
      *     path="/api/admin/delete/cate-units/{id}",
      *     summary="Xóa mềm danh mục",
      *     description="Xóa mềm một danh mục unit theo id",
-     *     tags={"admin/category"},
+     *     tags={"admin/orders"},
      *     security={{"bearer":{}}},
      *     @OA\Parameter(
      *         name="id",

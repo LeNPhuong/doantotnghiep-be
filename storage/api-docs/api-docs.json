@@ -341,7 +341,7 @@
         "/api/admin/delete/cate-units/{id}": {
             "delete": {
                 "tags": [
-                    "admin/category"
+                    "admin/orders"
                 ],
                 "summary": "Xóa mềm danh mục",
                 "description": "Xóa mềm một danh mục unit theo id",
@@ -2902,59 +2902,94 @@
             }
         },
         "/api/admin/orders/cancel/{id}": {
-            "delete": {
+            "put": {
                 "tags": [
                     "admin/orders"
                 ],
                 "summary": "Hủy đơn hàng",
                 "description": "Hủy đơn hàng dựa trên ID đơn hàng và cập nhật lại số lượng sản phẩm trong kho",
-                "operationId": "04ee5d7cd68d3b1e4caf597fce3e35eb",
+                "operationId": "517771d17a7ca160e48211e233828308",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID của đơn hàng",
+                        "description": "ID của đơn hàng cần hủy",
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "format": "int64"
+                            "example": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Hủy đơn hàng thành công và đã cộng lại sản phẩm vào kho",
+                        "description": "Hủy đơn hàng thành công.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
                                         "data": {
                                             "properties": {
                                                 "id": {
-                                                    "description": "ID của đơn hàng",
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "example": 1
                                                 },
                                                 "status_id": {
-                                                    "description": "Trạng thái của đơn hàng",
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "example": 5
                                                 },
                                                 "user": {
-                                                    "description": "Thông tin người dùng",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Nguyen Van A"
+                                                        }
+                                                    },
                                                     "type": "object"
                                                 },
                                                 "orderDetails": {
                                                     "type": "array",
                                                     "items": {
-                                                        "description": "Chi tiết đơn hàng",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 101
+                                                            },
+                                                            "product": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1001
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Product A"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            }
+                                                        },
                                                         "type": "object"
                                                     }
-                                                },
-                                                "transaction": {
-                                                    "description": "Thông tin giao dịch",
-                                                    "type": "object"
                                                 }
                                             },
                                             "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hủy đơn hàng thành công và đã cộng lại sản phẩm vào kho"
                                         }
                                     },
                                     "type": "object"
@@ -2963,14 +2998,18 @@
                         }
                     },
                     "400": {
-                        "description": "Lỗi: Trạng thái đơn hàng không hợp lệ",
+                        "description": "Lỗi hủy đơn hàng không hợp lệ.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
                                             "type": "string",
-                                            "example": "Đơn hàng đang giao không được phép hủy"
+                                            "example": "Đơn hàng đã giao thành công, không được phép hủy."
                                         }
                                     },
                                     "type": "object"
@@ -2979,14 +3018,18 @@
                         }
                     },
                     "404": {
-                        "description": "Lỗi: Không tìm thấy đơn hàng",
+                        "description": "Không tìm thấy đơn hàng.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
                                             "type": "string",
-                                            "example": "Không tìm thấy đơn hàng"
+                                            "example": "Không tìm thấy đơn hàng."
                                         }
                                     },
                                     "type": "object"
@@ -2995,14 +3038,18 @@
                         }
                     },
                     "500": {
-                        "description": "Lỗi máy chủ",
+                        "description": "Lỗi server trong quá trình hủy đơn hàng.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
                                             "type": "string",
-                                            "example": "Đã xảy ra lỗi trong quá trình hủy đơn hàng"
+                                            "example": "Đã xảy ra lỗi trong quá trình hủy đơn hàng."
                                         }
                                     },
                                     "type": "object"
@@ -3010,7 +3057,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/admin/products": {
@@ -9929,16 +9981,16 @@
             "description": "auth"
         },
         {
+            "name": "admin/orders",
+            "description": "admin/orders"
+        },
+        {
             "name": "admin/category",
             "description": "admin/category"
         },
         {
             "name": "admin/comment",
             "description": "admin/comment"
-        },
-        {
-            "name": "admin/orders",
-            "description": "admin/orders"
         },
         {
             "name": "admin/products",
