@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Str;
-
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 
 class AuthController extends BaseController
 {
@@ -97,7 +97,7 @@ class AuthController extends BaseController
         if (isset($input['role']) && $input['role'] !== 'user') {
             $input['role'] = 'user'; // Đặt lại role mặc định nếu có trường role
         }
-        
+
         $user = User::create($input);
         $success['user'] = $user;
         return $this->sendResponse($success, 'Đăng ký tài khoản thành công.', 201);
@@ -143,6 +143,17 @@ class AuthController extends BaseController
      */
     public function login()
     {
+        // Thực hiện validate email và password
+        $validator = Validator::make(request()->all(), [
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ]);
+
+        // Nếu validate thất bại, trả về thông báo lỗi
+        if ($validator->fails()) {
+            return $this->sendError('Dữ liệu không hợp lệ', $validator->errors(), 422);
+        }
+
         $credentials = request(['email', 'password']);
         $user = User::where('email', $credentials['email'])->first();
 
@@ -155,6 +166,7 @@ class AuthController extends BaseController
         if (!$token = auth()->attempt($credentials)) {
             return $this->sendError('Không được chấp nhận', ['error' => 'Unauthorized'], 401);
         }
+
         // Trả về token
         $success = $this->respondWithToken($token);
         return $this->sendResponse($success, 'Đăng nhập thành công');
@@ -166,6 +178,7 @@ class AuthController extends BaseController
      *     tags={"auth"},
      *     summary="Làm mới token",
      *     description="Phương thức này cho phép người dùng làm mới token JWT để nhận thông tin tài khoản mới.",
+     *     security={{"bearer": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="Refresh token thành công.",
@@ -188,11 +201,11 @@ class AuthController extends BaseController
         try {
             // Làm mới token
             $token = auth()->refresh();
-            $success = $this->respondWithToken($token);
-            return $this->sendResponse($success, 'Đã refresh thông tin tài khoản');
+            return $this->sendResponse($this->respondWithToken($token), 'Token đã được làm mới');
+        } catch (TokenInvalidException $e) {
+            return $this->sendError('Token không hợp lệ', [], 401);
         } catch (\Exception $e) {
-            // Bắt lỗi nếu refresh không thành công
-            return $this->sendError('Không được chấp nhận', ['error' => 'Unauthorized'], 401);
+            return $this->sendError('Lỗi không xác định', ['error' => $e->getMessage()], 500);
         }
     }
 
@@ -281,7 +294,7 @@ class AuthController extends BaseController
         return [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60, // thời gian sống của token
+            'expires_in' => auth()->factory()->getTTL(), // thời gian sống của token
         ];
     }
 }
