@@ -68,8 +68,11 @@ class OrderController extends BaseController
      */
     public function getOrders()
     {
+        // Lấy user hiện tại
+        $userId = auth()->user()->id;
+
         // Lấy danh sách đơn hàng của người dùng, bao gồm thông tin về status
-        $orders = Order::with(['status', 'orderDetails.product', 'transaction'])->get();
+        $orders = Order::with(['status', 'orderDetails.product', 'transaction'])->where('user_id', $userId)->get();
         // Kiểm tra nếu không có đơn hàng nào
         if ($orders->isEmpty()) {
             return $this->sendError('Không có đơn hàng nào!', '', 404);
@@ -470,7 +473,7 @@ class OrderController extends BaseController
             return $this->sendError('Lỗi định dạng', $validator->errors(), 400);
         }
 
-        $order = Order::with(['status', 'orderDetails.product', 'user.addresses', 'voucher','transaction'])->where('code', $request->code)->first();
+        $order = Order::with(['status', 'orderDetails.product', 'user.addresses', 'voucher', 'transaction'])->where('code', $request->code)->first();
 
         if (!$order) {
             return $this->sendError('Không tìm thấy đơn hàng.', '', 404);
