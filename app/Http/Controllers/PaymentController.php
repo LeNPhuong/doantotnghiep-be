@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PaymentSuccessMail;
 use App\Models\Order;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends BaseController
@@ -178,7 +180,9 @@ class PaymentController extends BaseController
             // Cập nhật trạng thái đơn hàng
             $order->status_id = 2; // Giả sử '2' là trạng thái "paid"
             $order->save();
-
+            // Gửi email xác nhận thanh toán
+            Mail::to($transaction->email)->send(new PaymentSuccessMail($transaction));
+            
             return $this->sendResponse($transaction, 'Thanh toán thành công.');
         } catch (\Exception $e) {
             // Xử lý khi thanh toán thất bại
@@ -315,6 +319,9 @@ class PaymentController extends BaseController
             $order->status_id = 2; // Giả sử '2' là trạng thái "paid"
             $order->save();
 
+            // Gửi email xác nhận thanh toán
+            Mail::to($transaction->email)->send(new PaymentSuccessMail($transaction));
+            
             return $this->sendResponse($transaction, 'Thanh toán thành công.');
         }
     }
