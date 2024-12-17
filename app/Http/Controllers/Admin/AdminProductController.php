@@ -731,4 +731,59 @@ class AdminProductController extends BaseController
             return $this->sendError('Không tìm thấy sản phẩm.', ['error' => $th->getMessage()], 404);
         }
     }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/admin/product/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn sản phẩm",
+     *     description="Xóa vĩnh viễn một sản phẩm đã được xóa mềm.",
+     *     tags={"admin/products"},
+     *     security={{"bearer": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID của sản phẩm cần xóa vĩnh viễn",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sản phẩm đã được xóa vĩnh viễn khỏi hệ thống",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Sản phẩm đã được xóa vĩnh viễn khỏi hệ thống."),
+     *             @OA\Property(property="data", type="string", example=null)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Không tìm thấy sản phẩm",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Không tìm thấy sản phẩm."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Có lỗi xảy ra trong quá trình xóa sản phẩm",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Có lỗi xảy ra trong quá trình xóa sản phẩm."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="error", type="string", example="Chi tiết lỗi")
+     *             )
+     *         )
+     *     )
+     * )
+     */
 }
