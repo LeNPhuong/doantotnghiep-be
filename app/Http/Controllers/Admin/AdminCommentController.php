@@ -315,8 +315,8 @@ class AdminCommentController extends BaseController
 
             // Tìm kiếm trong 'code' của đơn hàng và 'name' của người dùng
             $filterComment = $comment->filter(function ($comment) use ($inputSearch) {
-                return (strpos(strtolower($comment->comment), needle: strtolower($inputSearch)) !== false) ||
-                    (isset($comment->user) && strpos(strtolower($comment->user->name), needle: strtolower($inputSearch)) !== false);
+                return (strpos(strtolower($comment->comment), strtolower($inputSearch)) !== false) ||
+                    (isset($comment->user) && strpos(strtolower($comment->user->name),strtolower($inputSearch)) !== false);
             });
 
             if ($filterComment->isEmpty()) {

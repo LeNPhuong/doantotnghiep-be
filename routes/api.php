@@ -133,6 +133,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('admin/product/{id}/update', [AdminProductController::class, 'edit']);
     Route::post('admin/product/{id}/update', [AdminProductController::class, 'update']);
     Route::delete('admin/product/{id}/soft-delete', [AdminProductController::class, 'softDelete']);
+    Route::delete('admin/product/{id}/forceDelete', [AdminProductController::class, 'forceDelete']);
     Route::patch('admin/product/{id}/restore', [AdminProductController::class, 'restore']);
     Route::post('admin/product/create', [AdminProductController::class, 'create']);
 

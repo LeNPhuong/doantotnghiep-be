@@ -366,6 +366,7 @@ class AdminCategoryController extends BaseController
 
             // Cập nhật hoặc thêm mới unit_id trong bảng category_unit nếu có danh sách đơn vị mới
             if (isset($validatedData['units'])) {
+                
                 // Lấy danh sách unit_id hiện tại
                 $currentUnitIds = $category->units->pluck('id')->toArray();
 

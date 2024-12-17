@@ -426,23 +426,23 @@ class AdminProductController extends BaseController
      * )
      */
     public function search(Request $request)
-{
-    try {
-        $inputSearch = $request->input('query');
+    {
+        try {
+            $inputSearch = $request->input('query');
 
-        // Tìm kiếm thủ công bao gồm các bản ghi đã xóa mềm
-        $products = Product::where(function ($query) use ($inputSearch) {
-            $query->where('name', 'like', '%' . $inputSearch . '%')  // Tìm kiếm theo tên sản phẩm
-                  ->orWhere('description', 'like', '%' . $inputSearch . '%'); // Tìm kiếm theo mô tả sản phẩm (nếu có)
-        })
-        ->withTrashed()  // Bao gồm các sản phẩm đã xóa mềm
-        ->get();
+            // Tìm kiếm thủ công bao gồm các bản ghi đã xóa mềm
+            $products = Product::where(function ($query) use ($inputSearch) {
+                $query->where('name', 'like', '%' . $inputSearch . '%')  // Tìm kiếm theo tên sản phẩm
+                    ->orWhere('description', 'like', '%' . $inputSearch . '%'); // Tìm kiếm theo mô tả sản phẩm (nếu có)
+            })
+                ->withTrashed()  // Bao gồm các sản phẩm đã xóa mềm
+                ->get();
 
-        return $this->sendResponse($products, 'Sản phẩm tìm thấy');
-    } catch (\Throwable $th) {
-        return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm sản phẩm', ['error' => $th->getMessage()], 500);
+            return $this->sendResponse($products, 'Sản phẩm tìm thấy');
+        } catch (\Throwable $th) {
+            return $this->sendError('Đã xảy ra lỗi trong quá trình tìm kiếm sản phẩm', ['error' => $th->getMessage()], 500);
+        }
     }
-}
 
 
     /**
@@ -714,6 +714,21 @@ class AdminProductController extends BaseController
             return $this->sendResponse($product, 'Sản phẩm đã được thêm thành công.');
         } catch (\Exception $e) {
             return $this->sendError('Có lỗi xảy ra trong quá trình thêm sản phẩm', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            // Truy cập cả các bản ghi đã xóa mềm bằng withTrashed()
+            $product = Product::withTrashed()->findOrFail($id);
+
+            // Xóa vĩnh viễn sản phẩm
+            $product->forceDelete();
+
+            return $this->sendResponse(null, 'Sản phẩm đã được xóa vĩnh viễn khỏi hệ thống.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Không tìm thấy sản phẩm.', ['error' => $th->getMessage()], 404);
         }
     }
 }
